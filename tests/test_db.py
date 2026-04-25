@@ -7,13 +7,10 @@ Every test pulls a fresh practice repo from the `practice_repo` fixture
 from __future__ import annotations
 
 import json
-import sqlite3
 import time
 
-import pytest
-
 import db
-
+import pytest
 
 # ── config loaders ──────────────────────────────────────────────────────────
 

@@ -20,3 +20,9 @@ Thumbs.db
 # Local development scratch
 /tmp/
 *.local
+
+# Coverage
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml

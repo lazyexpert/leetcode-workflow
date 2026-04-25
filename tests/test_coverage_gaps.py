@@ -9,7 +9,6 @@ import sys
 
 from conftest import PLUGIN_ROOT, script_env
 
-
 SCRIPT = PLUGIN_ROOT / 'scripts' / 'pick' / 'coverage_gaps.py'
 
 
@@ -128,7 +127,6 @@ def test_patterns_outside_config_excluded_from_gaps(practice_repo):
         'patterns': ['Foo', 'Bar'],
     }))
     # Insert a stray pattern row directly.
-    import db
     _seed_problem(practice_repo, 1, 'Easy', 'Two Sum', patterns=['Stray'])
     result = _run(practice_repo)
     payload = json.loads(result.stdout)

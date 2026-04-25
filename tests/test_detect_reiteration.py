@@ -9,7 +9,6 @@ import sys
 
 from conftest import PLUGIN_ROOT, script_env
 
-
 SCRIPT = PLUGIN_ROOT / 'scripts' / 'new' / 'detect_reiteration.py'
 
 

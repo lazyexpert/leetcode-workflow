@@ -16,10 +16,10 @@ running migration scripts the user authored.
 """
 from __future__ import annotations
 
+import contextlib
 import re
 import sqlite3
 from pathlib import Path
-
 
 MIGRATIONS_DIR = Path(__file__).resolve().parent.parent / 'migrations'
 _MIGRATION_RX = re.compile(r'^(\d+)_.*\.sql$')
@@ -69,10 +69,8 @@ def apply_pending(
         try:
             conn.executescript(path.read_text())
         except sqlite3.Error:
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 conn.rollback()
-            except sqlite3.Error:
-                pass
             raise
         conn.commit()
         applied.append(version)

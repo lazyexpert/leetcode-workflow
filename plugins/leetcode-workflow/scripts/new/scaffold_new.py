@@ -30,8 +30,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'lib'))
-import db        # noqa: E402
-import render    # noqa: E402
+import db  # noqa: E402
+import render  # noqa: E402
 
 
 def folder_name(number: int, title: str) -> str:
@@ -83,7 +83,8 @@ def main() -> int:
         kind     = 'sql' if ptype == 'SQL' else 'algorithmic'
         fold     = folder_name(number, title)
         tdir     = target_dir(db.REPO, number, title, difficulty, ptype)
-        sfile    = tdir / ('solution.sql' if ptype == 'SQL' else f'solution.{language["extension"]}')
+        ext      = 'sql' if ptype == 'SQL' else language['extension']
+        sfile    = tdir / f'solution.{ext}'
 
         if sfile.exists() and sfile.stat().st_size > 0:
             print(f'ERROR: {sfile.relative_to(db.REPO)} already has content. '

@@ -9,7 +9,6 @@ import time
 
 from conftest import PLUGIN_ROOT, script_env
 
-
 SCRIPT = PLUGIN_ROOT / 'scripts' / 'abort' / 'abort.py'
 
 
@@ -73,7 +72,7 @@ def test_abort_sole_attempt_removes_problem_and_folder(practice_repo):
 
 
 def test_abort_sole_attempt_cascades_patterns(practice_repo):
-    folder = _scaffold(practice_repo, 1, 'Easy', 'Two Sum')
+    _scaffold(practice_repo, 1, 'Easy', 'Two Sum')
     import db
     conn = db.open_db()
     db.replace_patterns(conn, 1, ['Hash Map / Hash Set'])
@@ -130,7 +129,7 @@ def test_abort_with_prior_attempt_restores_from_head(git_repo):
 
     result = _run(git_repo)
     assert result.returncode == 0, result.stderr
-    assert f'restored src/Easy/1.Two_Sum/solution.ts' in result.stdout
+    assert 'restored src/Easy/1.Two_Sum/solution.ts' in result.stdout
 
     # Solution file restored.
     assert sfile.read_text() == 'COMMITTED'

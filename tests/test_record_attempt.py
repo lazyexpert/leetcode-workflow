@@ -4,15 +4,12 @@ Subprocess tests for scripts/done/record_attempt.py.
 from __future__ import annotations
 
 import json
-import sqlite3
 import subprocess
 import sys
 import time
 
 import pytest
-
 from conftest import PLUGIN_ROOT, script_env
-
 
 SCRIPT = PLUGIN_ROOT / 'scripts' / 'done' / 'record_attempt.py'
 

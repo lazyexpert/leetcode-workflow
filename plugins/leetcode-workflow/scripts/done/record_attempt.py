@@ -40,8 +40,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'lib'))
-import db    # noqa: E402
-
+import db  # noqa: E402
 
 REQUIRED_KEYS = ('number', 'title', 'difficulty', 'path', 'kind')
 
@@ -54,7 +53,9 @@ def parse_payload(raw: str) -> dict:
     if data['kind'] not in ('algorithmic', 'sql'):
         raise ValueError(f'invalid kind {data["kind"]!r}')
     if data['kind'] == 'algorithmic' and data['difficulty'] not in ('Easy', 'Medium', 'Hard'):
-        raise ValueError(f'algorithmic problem requires Easy|Medium|Hard, got {data["difficulty"]!r}')
+        raise ValueError(
+            f'algorithmic problem requires Easy|Medium|Hard, got {data["difficulty"]!r}',
+        )
     return data
 
 

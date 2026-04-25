@@ -8,14 +8,12 @@ only — payload validation, side effects, error paths.
 from __future__ import annotations
 
 import json
-import subprocess
 import sqlite3
+import subprocess
 import sys
 
 import pytest
-
 from conftest import PLUGIN_ROOT, script_env
-
 
 SCRIPT = PLUGIN_ROOT / 'scripts' / 'init' / 'init.py'
 

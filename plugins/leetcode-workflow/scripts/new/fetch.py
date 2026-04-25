@@ -43,8 +43,7 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'lib'))
-import db    # noqa: E402
-
+import db  # noqa: E402
 
 DEFAULT_MANIFEST_PATH = '/tmp/leetcode-workflow-manifest.json'
 

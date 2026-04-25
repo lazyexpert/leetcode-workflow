@@ -14,7 +14,6 @@ import sys
 
 from conftest import PLUGIN_ROOT, script_env
 
-
 SCRIPT = PLUGIN_ROOT / 'scripts' / 'update' / 'update.py'
 
 

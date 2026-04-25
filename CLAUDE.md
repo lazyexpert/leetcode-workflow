@@ -202,6 +202,48 @@ pytest -k "atomicity"              # filter by name
 
 `pytest.ini` sets `pythonpath = plugins/leetcode-workflow/lib` and `testpaths = tests`. `conftest.py` provides `practice_repo` (tmp dir + baseline applied + `db` reloaded), `empty_repo` (no init — for error-path tests), and `git_repo` (practice + git init + initial commit, for `commit.py` and `abort.py` git-restore tests).
 
+### Linting
+
+`ruff check .` runs the lint gate. Config in `ruff.toml`: line-length 100, rules `E/W` (pycodestyle), `F` (pyflakes), `I` (isort), `UP` (pyupgrade), `B` (bugbear), `SIM` (flake8-simplify). Per-file ignores cover tests (long assertion lines, fixture-first imports) and `init.py` (embeds the practice-repo README as a string literal — markdown line length is irrelevant).
+
+Run locally:
+
+```bash
+pip install -r requirements-dev.txt
+ruff check .                    # lint
+ruff check . --fix              # auto-fix what's auto-fixable
+```
+
+CI invocation: `ruff check --output-format=github .` — emits inline annotations on PRs.
+
+We do **not** enforce `ruff format` in CI. The codebase uses intentional alignment (`=` columns, `if x: foo()` one-liners with aligned colons) that the formatter would strip. Formatter adoption is a separate style decision.
+
+### Coverage
+
+Most tests run scripts as subprocesses, so default in-process coverage misses them. The setup measures both the parent pytest process and every subprocess it spawns, then combines.
+
+How it works:
+- `.coveragerc` at repo root holds the config. `branch = True`, `parallel = True`, no `[run] source` (it would resolve against subprocess cwd and break collection); we filter at report time via `[report] include`.
+- `sitecustomize.py` at repo root calls `coverage.process_startup()` when `COVERAGE_PROCESS_START` is set in env. Python's site init runs it automatically if it sits on `sys.path`.
+- `tests/conftest.py` detects `COVERAGE_PROCESS_START` and prepends repo root to `PYTHONPATH` so subprocesses pick up `sitecustomize`. It also pins `COVERAGE_FILE` to an absolute path so subprocess data files land in the repo root regardless of their cwd.
+
+Run locally:
+
+```bash
+pip install -r requirements-dev.txt        # one-time
+
+rm -f .coverage .coverage.*
+COVERAGE_PROCESS_START="$PWD/.coveragerc" \
+  coverage run --rcfile=.coveragerc -m pytest
+coverage combine --rcfile=.coveragerc
+coverage report --rcfile=.coveragerc
+coverage html --rcfile=.coveragerc          # optional: htmlcov/index.html
+```
+
+Baseline as of this writing: **95% line coverage, 19 modules, 957 statements, 202 branches.** Lowest is `scripts/update/update.py` at 84% (only exercised when a real migration ships). Plain `pytest` (without `coverage run`) is unaffected — the scaffolding is fully gated on `COVERAGE_PROCESS_START`.
+
+CI integration is straightforward: `pip install -r requirements-dev.txt` then the four commands above, ending with `coverage report --fail-under=<N>` when we set a gate. `coverage xml` produces a Codecov-compatible report.
+
 ### Local install for dogfooding
 
 ```

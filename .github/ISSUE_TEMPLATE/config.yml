@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Architecture and conventions
+    url: https://github.com/lazyexpert/leetcode-workflow/blob/main/CLAUDE.md
+    about: Read this before filing a bug or feature request — explains the plugin's shape, DB model, and pedagogical contract.
+  - name: Roadmap
+    url: https://github.com/lazyexpert/leetcode-workflow/blob/main/roadmap.md
+    about: Things already on the radar. Worth a glance before filing a feature request.

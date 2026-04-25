@@ -1,0 +1,35 @@
+# Ruff config — single-tool linter + formatter for Python.
+# Run: `ruff check .` (lint) and `ruff format --check .` (formatter dry-run).
+
+target-version = "py310"
+line-length = 100
+
+extend-exclude = [
+    ".venv",
+    "htmlcov",
+]
+
+[lint]
+# E/W = pycodestyle, F = pyflakes, I = isort,
+# UP = pyupgrade, B = bugbear, SIM = flake8-simplify.
+select = ["E", "W", "F", "I", "UP", "B", "SIM"]
+
+ignore = [
+    # Module-level future-import is intentional across the codebase
+    # (CLAUDE.md: "from __future__ import annotations defensively in
+    # each script for 3.9 tolerance"). Don't touch it.
+    "UP010",
+]
+
+[lint.per-file-ignores]
+# Tests can shadow names, use long lines for assertion fixtures, and skip
+# import-at-top rules where fixtures construct the under-test environment first.
+"tests/*" = ["E501", "E402"]
+# init.py embeds the practice-repo README as a string literal; markdown line
+# length is irrelevant to its rendered output.
+"plugins/leetcode-workflow/scripts/init/init.py" = ["E501"]
+
+[format]
+# Match the codebase: single quotes everywhere except docstrings.
+quote-style = "single"
+indent-style = "space"

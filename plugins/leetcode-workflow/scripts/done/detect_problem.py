@@ -26,7 +26,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'lib'))
-import db    # noqa: E402
+import db  # noqa: E402
 
 
 def working_tree_changes(repo: Path) -> list[str]:
@@ -62,7 +62,8 @@ def build_solution_rx(extension: str) -> re.Pattern[str]:
 
 def main() -> int:
     repo = db.REPO
-    if not (repo / '.claude' / 'practice.sql').exists() and not (repo / '.claude' / 'practice.db').exists():
+    if (not (repo / '.claude' / 'practice.sql').exists()
+            and not (repo / '.claude' / 'practice.db').exists()):
         print('ERROR: Not a leetcode-workflow repo. '
               'Run /leetcode-workflow:init or cd into one.', file=sys.stderr)
         return 1

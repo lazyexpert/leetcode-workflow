@@ -41,7 +41,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 # Resolve target repo BEFORE importing db — db's module-level path
 # resolution uses `git rev-parse` which would point at a parent git repo
 # if the user happened to run init from a subdir of one. cwd is the
@@ -50,10 +49,10 @@ if 'LEETCODE_REPO' not in os.environ:
     os.environ['LEETCODE_REPO'] = str(Path.cwd().resolve())
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'lib'))
-import db            # noqa: E402
-import migrate       # noqa: E402
-import plugin_meta   # noqa: E402
-import render        # noqa: E402
+import db  # noqa: E402
+import migrate  # noqa: E402
+import plugin_meta  # noqa: E402
+import render  # noqa: E402
 
 
 def _validate_input(data: dict) -> tuple[dict, dict] | None:

@@ -52,6 +52,14 @@ The pedagogical contract is enforced: Claude is configured as a coach, not a sol
 
 ---
 
+## Contributing
+
+Bug reports, feature requests, and PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, testing, and PR flow. If you're a coding agent, also read [AGENTS.md](AGENTS.md) — the agent-specific rules.
+
+The architectural reference is [CLAUDE.md](CLAUDE.md). Worth a skim before filing an issue or proposing a feature.
+
+---
+
 ## License
 
 [MIT](LICENSE) © 2026 Khatskalev Oleksandr

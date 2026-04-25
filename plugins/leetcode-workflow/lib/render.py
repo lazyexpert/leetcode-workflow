@@ -99,7 +99,8 @@ def render_timings(conn: sqlite3.Connection) -> str:
     header = [
         '# Solution Timings',
         '',
-        'Time from `/leetcode-workflow:new` scaffold to `/leetcode-workflow:done` commit, in minutes.',
+        'Time from `/leetcode-workflow:new` scaffold to `/leetcode-workflow:done` commit, '
+        'in minutes.',
         f'Retry thresholds (configurable in `config.json`): {threshold_line}',
         '',
         '| # | Problem | Difficulty | Date | Minutes |',
@@ -153,9 +154,12 @@ def render_retry(conn: sqlite3.Connection) -> str:
     body = []
     for num, title, diff, folder, flagged_at, timing_bad, complexity_bad, stale in rows:
         reasons = []
-        if timing_bad:     reasons.append('timing')
-        if complexity_bad: reasons.append('complexity')
-        if stale:          reasons.append('stale')
+        if timing_bad:
+            reasons.append('timing')
+        if complexity_bad:
+            reasons.append('complexity')
+        if stale:
+            reasons.append('stale')
         body.append(
             f'| {utc_date(flagged_at)} | {num} | '
             f'[{title}]({link_path(diff, "algorithmic", folder)}) | '

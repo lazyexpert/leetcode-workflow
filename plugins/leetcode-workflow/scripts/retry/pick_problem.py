@@ -34,7 +34,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'lib'))
-import db    # noqa: E402
+import db  # noqa: E402
 
 
 def find_solution_file(folder_path: Path) -> Path | None:
@@ -54,7 +54,7 @@ def reasons_for(conn, number: int) -> list[str]:
         'FROM retry_flags WHERE number = ?',
         (number,),
     ).fetchone() or (0, 0, 0)
-    return [name for flag, name in zip(row, ('timing', 'complexity', 'stale')) if flag]
+    return [name for flag, name in zip(row, ('timing', 'complexity', 'stale'), strict=True) if flag]
 
 
 def main() -> int:

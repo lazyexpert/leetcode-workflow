@@ -18,7 +18,6 @@ import json
 import sys
 
 import pytest
-
 from conftest import PLUGIN_ROOT
 
 

@@ -1,0 +1,29 @@
+[run]
+branch = True
+parallel = True
+data_file = .coverage
+# No `source` here on purpose: it's resolved against cwd at startup, which
+# breaks subprocess coverage when subprocesses run from temp dirs. We scope
+# the report instead via [report] include.
+
+[paths]
+source =
+    plugins/leetcode-workflow
+    */plugins/leetcode-workflow
+
+[report]
+include =
+    plugins/leetcode-workflow/lib/*
+    plugins/leetcode-workflow/scripts/*
+show_missing = True
+skip_covered = False
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
+    raise NotImplementedError
+
+[html]
+directory = htmlcov
+
+[xml]
+output = coverage.xml

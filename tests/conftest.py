@@ -15,8 +15,21 @@ from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
+PLUGIN_ROOT = REPO_ROOT / 'plugins' / 'leetcode-workflow'
 
-PLUGIN_ROOT = Path(__file__).resolve().parent.parent / 'plugins' / 'leetcode-workflow'
+
+# Subprocess coverage: when COVERAGE_PROCESS_START is set (by `coverage run`
+# or by CI), ensure repo root is on PYTHONPATH so subprocess Python loads
+# sitecustomize.py and starts measurement before any user code runs. Also
+# pin COVERAGE_FILE to an absolute path so subprocess data files land in
+# the repo root regardless of the subprocess's cwd. No-op outside coverage.
+if os.environ.get('COVERAGE_PROCESS_START'):
+    _pp = os.environ.get('PYTHONPATH', '')
+    _parts = _pp.split(os.pathsep) if _pp else []
+    if str(REPO_ROOT) not in _parts:
+        os.environ['PYTHONPATH'] = os.pathsep.join([str(REPO_ROOT), *_parts]) if _parts else str(REPO_ROOT)
+    os.environ.setdefault('COVERAGE_FILE', str(REPO_ROOT / '.coverage'))
 
 
 @pytest.fixture

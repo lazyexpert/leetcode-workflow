@@ -17,8 +17,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import db            # noqa: E402
-import plugin_meta   # noqa: E402
+import db  # noqa: E402
+import plugin_meta  # noqa: E402
 
 
 def main() -> int:

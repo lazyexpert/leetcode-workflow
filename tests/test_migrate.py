@@ -12,7 +12,6 @@ import sqlite3
 
 import pytest
 
-
 # ── discover_migrations ─────────────────────────────────────────────────────
 
 def test_discover_empty_dir(tmp_path):

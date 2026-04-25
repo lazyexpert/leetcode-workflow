@@ -4,15 +4,12 @@ Subprocess tests for scripts/pick/choose_mode.py.
 from __future__ import annotations
 
 import json
-import os
 import random
 import subprocess
 import sys
 
 import pytest
-
 from conftest import PLUGIN_ROOT, script_env
-
 
 SCRIPT = PLUGIN_ROOT / 'scripts' / 'pick' / 'choose_mode.py'
 
