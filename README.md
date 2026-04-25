@@ -12,7 +12,7 @@ This repository is a **Claude Code plugin marketplace**. Install the plugins her
 
 Seven slash commands, each backed by deterministic Python scripts; orchestration prose lives in `commands/<name>.md`.
 
-| Command | Purpose |
+| Command | Purpose ||
 |---|---|
 | `/leetcode-workflow:init` | Bootstrap a fresh practice repo at the current directory: schema, empty views, default config, `.gitignore`, initial commit. Asks two short questions (language, retry thresholds) — `ok` accepts defaults. |
 | `/leetcode-workflow:new <problem-url>` | Scaffold a problem from a LeetCode URL (e.g. `https://leetcode.com/problems/two-sum/`). Creates the folder, writes the README, seeds `solution.<ext>` with LC's per-language signature template, opens an attempt. |
