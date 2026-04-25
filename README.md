@@ -14,7 +14,7 @@ Seven slash commands, each backed by deterministic Python scripts; orchestration
 
 | Command | Purpose |
 |---|---|
-| `/leetcode-workflow:init` | Bootstrap a fresh practice repo at the current directory: schema, empty views, default config, `.gitignore`, initial commit. Asks two short questions (language, retry thresholds) — `yes` accepts defaults. |
+| `/leetcode-workflow:init` | Bootstrap a fresh practice repo at the current directory: schema, empty views, default config, `.gitignore`, initial commit. Asks two short questions (language, retry thresholds) — `ok` accepts defaults. |
 | `/leetcode-workflow:new <problem-url>` | Scaffold a problem from a LeetCode URL (e.g. `https://leetcode.com/problems/two-sum/`). Creates the folder, writes the README, seeds `solution.<ext>` with LC's per-language signature template, opens an attempt. |
 | `/leetcode-workflow:pick` | "What should I solve next?" — picks a fresh problem targeting an under-covered pattern. With non-zero `pick_retry_ratio`, occasionally routes to a retry pick instead. |
 | `/leetcode-workflow:done` | Close out the current attempt: timing verdict against your threshold, pattern classification, complexity flag, auto-commit. |
