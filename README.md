@@ -112,7 +112,7 @@ sequenceDiagram
     Plugin->>Plugin: strip body, leave signature template
     Plugin-->>You: problem ready, fresh attempt
     You->>Plugin: /leetcode-workflow:done
-    Plugin-->>You: new timing recorded; flags re-evaluated
+    Plugin-->>You: new timing recorded — flags re-evaluated
 ```
 
 ---
