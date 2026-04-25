@@ -14,7 +14,7 @@ Seven slash commands, each backed by deterministic Python scripts; orchestration
 
 | Command | Purpose |
 |---|---|
-| `/leetcode-workflow:init` | Bootstrap a fresh practice repo at the current directory: schema, empty views, default config, `.gitignore`, initial commit. Asks two short questions (language, retry thresholds) — `yes` accepts defaults. |
+| `/leetcode-workflow:init` | Bootstrap a fresh practice repo at the current directory: schema, empty views, default config, `.gitignore`, initial commit. Asks two short questions (language, retry thresholds) — `ok` accepts defaults. |
 | `/leetcode-workflow:new <problem-url>` | Scaffold a problem from a LeetCode URL (e.g. `https://leetcode.com/problems/two-sum/`). Creates the folder, writes the README, seeds `solution.<ext>` with LC's per-language signature template, opens an attempt. |
 | `/leetcode-workflow:pick` | "What should I solve next?" — picks a fresh problem targeting an under-covered pattern. With non-zero `pick_retry_ratio`, occasionally routes to a retry pick instead. |
 | `/leetcode-workflow:done` | Close out the current attempt: timing verdict against your threshold, pattern classification, complexity flag, auto-commit. |
@@ -49,6 +49,8 @@ You're ready to solve.
 Most LeetCode practice setups are scratch directories with a copy-pasted problem statement and a one-shot solution file. After 50 problems you've lost track of which patterns you've covered, which were slow, and which deserve a second pass. This workflow encodes that bookkeeping as durable state — your DB tracks every attempt, the retry queue surfaces what's worth revisiting, and the Markdown views give you a human-readable progress log without manual upkeep.
 
 The pedagogical contract is enforced: Claude is configured as a coach, not a solution generator. You get hints, complexity analysis, pattern names — never the answer.
+
+Most behavior is deterministic Python scripts; Claude is only invoked where reasoning is genuinely needed (suggesting your next problem, classifying solution patterns, stripping a previous solution's body for retry). Token cost stays low — a typical solve session runs only a handful of LLM calls beyond the conversational coaching you ask for.
 
 ---
 

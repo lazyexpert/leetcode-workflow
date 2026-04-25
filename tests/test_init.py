@@ -94,6 +94,42 @@ def test_init_skips_git_init_when_dot_git_present(empty_repo):
     assert (empty_repo / '.git' / 'HEAD').read_text() == head_before
 
 
+def test_init_creates_initial_commit_when_git_configured(empty_repo):
+    """With git user config set, /init produces a single scaffold commit
+    so the first /done lands cleanly on top of it."""
+    subprocess.run(['git', 'init', '-q', '--initial-branch=main'],
+                   cwd=empty_repo, check=True)
+    subprocess.run(['git', 'config', 'user.email', 'test@example.com'],
+                   cwd=empty_repo, check=True)
+    subprocess.run(['git', 'config', 'user.name', 'Test'],
+                   cwd=empty_repo, check=True)
+    subprocess.run(['git', 'config', 'commit.gpgsign', 'false'],
+                   cwd=empty_repo, check=True)
+
+    result = _run(empty_repo, _default_payload())
+    assert result.returncode == 0, result.stderr
+    assert 'initial commit created' in result.stdout
+
+    log = subprocess.run(
+        ['git', 'log', '--oneline'], cwd=empty_repo,
+        capture_output=True, text=True, check=True,
+    )
+    lines = [ln for ln in log.stdout.strip().split('\n') if ln]
+    assert len(lines) == 1, f'expected 1 commit, got {len(lines)}: {log.stdout}'
+    assert 'init: scaffold leetcode-workflow practice repo' in lines[0]
+
+
+def test_init_soft_fails_commit_when_git_unconfigured(empty_repo):
+    """With no git user config, /init still succeeds (returncode 0) but
+    surfaces a warning telling the user how to recover."""
+    result = _run(empty_repo, _default_payload())
+    assert result.returncode == 0, result.stderr
+    # No user.email/user.name set → commit fails, files staged
+    if 'initial commit created' not in result.stdout:
+        assert 'WARNING: git commit failed' in result.stderr
+        assert 'Configure git' in result.stderr
+
+
 def test_init_writes_config_with_user_input_and_defaults(empty_repo):
     payload = _default_payload(
         language={'extension': 'py', 'name': 'python'},

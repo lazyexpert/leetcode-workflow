@@ -15,13 +15,13 @@ It refuses if the cwd contains anything other than `.git`.
 
 Ask the user:
 
-> Which language do you solve LeetCode problems in? Type `yes` to use the **TypeScript** default, or reply with the name of one of: Python, Go, Java, C++, JavaScript, Rust, Kotlin, Swift, Ruby.
+> Which language do you solve LeetCode problems in? Type `ok` to use the **TypeScript** default, or reply with the name of one of: Python, Go, Java, C++, JavaScript, Rust, Kotlin, Swift, Ruby.
 
 Map the answer (case-insensitive, trim whitespace) using this table:
 
 | User says            | extension | name        |
 |----------------------|-----------|-------------|
-| yes / TypeScript / ts| ts        | typescript  |
+| ok / TypeScript / ts | ts        | typescript  |
 | Python / py          | py        | python      |
 | Go / golang          | go        | go          |
 | Java                 | java      | java        |
@@ -42,10 +42,10 @@ Hold the resolved `{extension, name}` for Step 3.
 
 Ask the user:
 
-> Default retry thresholds are **Easy 15 / Medium 30 / Hard 60** minutes — solve times past these flag a problem for retry. Type `yes` for defaults, or provide your configuration in the form `{easy}/{medium}/{hard}` (e.g. `15/30/45`).
+> Default retry thresholds are **Easy 15 / Medium 30 / Hard 60** minutes — solve times past these flag a problem for retry. Type `ok` for defaults, or provide your configuration in the form `{easy}/{medium}/{hard}` (e.g. `15/30/45`).
 
 Parse the answer:
-- `yes` (case-insensitive) → `{Easy: 15, Medium: 30, Hard: 60}`
+- `ok` (case-insensitive) → `{Easy: 15, Medium: 30, Hard: 60}`
 - exactly three positive integers separated by `/` (e.g. `10/25/50`) → `{Easy: <1>, Medium: <2>, Hard: <3>}`
 - anything else → re-ask once with the same prompt. After a second bad answer, stop with: "Run `/leetcode-workflow:init` again with valid input."
 
