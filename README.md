@@ -52,6 +52,68 @@ The pedagogical contract is enforced: Claude is configured as a coach, not a sol
 
 ---
 
+## Workflow
+
+Three flows you'll spend most of your time in.
+
+### Daily flow — solving a new problem
+
+```mermaid
+sequenceDiagram
+    actor You
+    participant Plugin as leetcode-workflow
+    participant LC as LeetCode
+
+    You->>Plugin: /leetcode-workflow:new <url>
+    Plugin->>LC: fetch problem
+    LC-->>Plugin: title, difficulty, signature
+    Plugin-->>You: scaffolded folder + solution.<ext>
+    Note over You: write solution<br/>ask Claude for hints, never the answer
+    You->>Plugin: /leetcode-workflow:done
+    Plugin-->>You: timing verdict, pattern classified, auto-commit
+```
+
+### Picking what's next
+
+`/pick` either suggests a fresh problem targeting an under-covered pattern, or — at your configured `pick_retry_ratio` — routes to the retry pool instead.
+
+```mermaid
+sequenceDiagram
+    actor You
+    participant Plugin as leetcode-workflow
+
+    You->>Plugin: /leetcode-workflow:pick
+    alt fresh problem (default)
+        Plugin->>Plugin: find an under-covered pattern
+        Plugin-->>You: suggested LeetCode URL
+        Note over You: continue with /leetcode-workflow:new
+    else retry pool (configurable share)
+        Plugin->>Plugin: pick stale problem from retry queue
+        Plugin-->>You: problem ready, signature reset
+        Note over You: solve, then /leetcode-workflow:done
+    end
+```
+
+### Spaced repetition — `/retry`
+
+Past attempts that ran slow, used a brittle approach, or have aged past their cooldown surface in the retry queue. `/retry` reseeds one of them.
+
+```mermaid
+sequenceDiagram
+    actor You
+    participant Plugin as leetcode-workflow
+
+    Note over Plugin: Retry queue tracks problems flagged by:<br/>slow timing, brittle complexity, or stale (cooldown elapsed)
+    You->>Plugin: /leetcode-workflow:retry
+    Plugin->>Plugin: pick from cooldown-elapsed pool
+    Plugin->>Plugin: strip body, leave signature template
+    Plugin-->>You: problem ready, fresh attempt
+    You->>Plugin: /leetcode-workflow:done
+    Plugin-->>You: new timing recorded; flags re-evaluated
+```
+
+---
+
 ## Contributing
 
 Bug reports, feature requests, and PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, testing, and PR flow. If you're a coding agent, also read [AGENTS.md](AGENTS.md) — the agent-specific rules.
