@@ -104,6 +104,30 @@ def _git_init_if_needed(repo: Path) -> bool:
     return True
 
 
+def _initial_commit(repo: Path) -> bool:
+    """Stage everything and create the scaffold commit. Soft-fails if git
+    user config is missing — the practice repo is otherwise fully set up,
+    the user just needs to commit manually after configuring git."""
+    add = subprocess.run(
+        ['git', 'add', '-A'], cwd=repo,
+        capture_output=True, text=True,
+    )
+    if add.returncode != 0:
+        print(f'WARNING: git add failed: {add.stderr.strip()}', file=sys.stderr)
+        return False
+    commit = subprocess.run(
+        ['git', 'commit', '-q', '-m', 'init: scaffold leetcode-workflow practice repo'],
+        cwd=repo, capture_output=True, text=True,
+    )
+    if commit.returncode != 0:
+        print(f'WARNING: git commit failed: {commit.stderr.strip()}', file=sys.stderr)
+        print('         Files are staged but uncommitted. Configure git '
+              '(git config --global user.email / user.name) then `git commit`.',
+              file=sys.stderr)
+        return False
+    return True
+
+
 GITIGNORE = """\
 # leetcode-workflow
 .claude/practice.db
@@ -226,6 +250,8 @@ def main() -> int:
 
     print(f'init: created leetcode-workflow practice repo at {repo}')
     print(f'      schema_version = {final_version}')
+    if _initial_commit(repo):
+        print('      initial commit created')
     return 0
 
 

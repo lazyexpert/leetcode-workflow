@@ -50,6 +50,8 @@ Most LeetCode practice setups are scratch directories with a copy-pasted problem
 
 The pedagogical contract is enforced: Claude is configured as a coach, not a solution generator. You get hints, complexity analysis, pattern names — never the answer.
 
+Most behavior is deterministic Python scripts; Claude is only invoked where reasoning is genuinely needed (suggesting your next problem, classifying solution patterns, stripping a previous solution's body for retry). Token cost stays low — a typical solve session runs only a handful of LLM calls beyond the conversational coaching you ask for.
+
 ---
 
 ## Workflow

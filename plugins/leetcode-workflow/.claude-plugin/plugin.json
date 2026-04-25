@@ -1,6 +1,6 @@
 {
   "name": "leetcode-workflow",
-  "description": "Track your LeetCode practice in git — scaffold problems, time solves, classify patterns, surface what to retry. Seven skills (init, new, pick, done, retry, abort, update) over a SQLite-backed practice repo.",
+  "description": "Claude Code-native LeetCode practice tracker. Seven slash commands scaffold problems, time solves, classify patterns, and surface what to retry — backed by a SQLite practice repo with five generated Markdown views (progress, timings, retry, patterns coverage, history). Mostly deterministic Python; Claude is invoked only where reasoning is needed (problem suggestion, pattern classification, body stripping), keeping token cost low. Pedagogical contract enforced: hints, never solutions.",
   "version": "0.1.0",
   "author": {
     "name": "Khatskalev Oleksandr"
