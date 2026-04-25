@@ -23,7 +23,7 @@ Claude Code has **no central plugin registry**. Plugins live in marketplaces —
 /plugin install leetcode-workflow@leetcode-workflow
 ```
 
-Once installed, the seven commands become available across all the user's projects. Eventually we may submit to Anthropic's official marketplace (via [claude.ai/settings/plugins/submit](https://claude.ai/settings/plugins/submit)), but that's a v1+ concern.
+Once installed, the seven commands become available across all the user's projects. The plugin is self-publishable: any user running `/plugin marketplace add lazyexpert/leetcode-workflow` installs it directly from this repo's public `marketplace.json` — no Anthropic-side submission required. Curated discovery via Anthropic's web UI may come later; that's a v1+ concern.
 
 ### Repo layout
 
