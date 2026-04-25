@@ -3,7 +3,7 @@ Read the plugin manifest. Single source of truth for plugin metadata so
 update.py and nudge.py stay in sync.
 
 The manifest lives at <plugin_root>/.claude-plugin/plugin.json — sibling
-of skills/, lib/, and migrations/.
+of scripts/, lib/, and migrations/.
 """
 from __future__ import annotations
 

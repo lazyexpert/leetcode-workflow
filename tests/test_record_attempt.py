@@ -1,5 +1,5 @@
 """
-Subprocess tests for skills/done/scripts/record_attempt.py.
+Subprocess tests for scripts/done/record_attempt.py.
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ import pytest
 from conftest import PLUGIN_ROOT, script_env
 
 
-SCRIPT = PLUGIN_ROOT / 'skills' / 'done' / 'scripts' / 'record_attempt.py'
+SCRIPT = PLUGIN_ROOT / 'scripts' / 'done' / 'record_attempt.py'
 
 
 def _run(repo, payload):

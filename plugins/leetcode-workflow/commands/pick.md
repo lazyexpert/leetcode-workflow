@@ -1,15 +1,7 @@
 ---
-name: pick
-description: >
-  Decide what to solve next. By default suggests a fresh LeetCode problem
-  targeting a pattern the user has under-covered; with non-zero
-  pick_retry_ratio, occasionally routes to the retry pool instead.
-  Either way, ends with the problem ready to solve. Invoked as
-  /leetcode-workflow:pick.
+description: Pick what to solve next — fresh problem targeting an under-covered pattern, or a retry pick if pick_retry_ratio fires.
 allowed-tools: Bash, Read
 ---
-
-# pick
 
 The "what should I solve next" command. Removes the friction of finding a
 fresh LeetCode URL — picks one targeting an under-covered pattern,
@@ -23,7 +15,7 @@ algorithm, approach, or complexity.**
 ## Step 1 — Decide the mode
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/pick/scripts/choose_mode.py
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/pick/choose_mode.py
 ```
 
 Stdout is a single word: `retry` or `new`. Branch accordingly.
@@ -32,13 +24,11 @@ Stdout is a single word: `retry` or `new`. Branch accordingly.
 
 ## Step 2a — Retry path (`mode == "retry"`)
 
-Run the same flow as `/leetcode-workflow:retry` with no argument. The
-mechanics live in `${CLAUDE_PLUGIN_ROOT}/skills/retry/SKILL.md`; the
-short version:
+Run the same flow as `/leetcode-workflow:retry` with no argument:
 
-1. `python3 ${CLAUDE_PLUGIN_ROOT}/skills/retry/scripts/pick_problem.py` → JSON.
-2. Read `solution_path`, ask the model to strip the body to a signature-only template (use the same prompt as `retry/SKILL.md`).
-3. Pipe `{"number": N, "body_text": "<stripped>"}` into `${CLAUDE_PLUGIN_ROOT}/lib/apply_solution_template.py`.
+1. `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/retry/pick_problem.py` → JSON.
+2. Read `solution_path`. Use the **Write tool** to save the stripped body to `/tmp/leetcode-workflow-body.txt` (same strip prompt as the `retry` command — empty file for a full wipe).
+3. `python3 ${CLAUDE_PLUGIN_ROOT}/lib/apply_solution_template.py --number <N> --body-file /tmp/leetcode-workflow-body.txt`
 4. Skip to Step 3.
 
 If `pick_problem.py` exits 1 with "No retry candidates outside the cooldown window", fall through to the new path (Step 2b) instead — the user asked for `/pick`, an empty retry pool shouldn't leave them empty-handed.
@@ -50,7 +40,7 @@ If `pick_problem.py` exits 1 with "No retry candidates outside the cooldown wind
 ### 2b.1 — Read coverage gaps
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/pick/scripts/coverage_gaps.py
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/pick/coverage_gaps.py
 ```
 
 Stdout: `{"gaps": [{"pattern": "...", "count": int}, ...], "solved_numbers": [...]}`.
@@ -67,13 +57,15 @@ Pick a LeetCode problem to solve. Constraints:
 ### 2b.3 — Fetch and scaffold
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/new/scripts/fetch.py "<url>" \
-  | python3 ${CLAUDE_PLUGIN_ROOT}/skills/new/scripts/scaffold_new.py
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/new/fetch.py "<url>"
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/new/scaffold_new.py < /tmp/leetcode-workflow-manifest.json
 ```
+
+`fetch.py` writes the manifest to `/tmp/leetcode-workflow-manifest.json`. **Do not `cat` that file or read the scaffolded `README.md`** — both contain the problem statement; reading them tempts you into hinting.
 
 Interpret `fetch.py`'s exit code:
 
-- **0** — manifest flowed into `scaffold_new.py`. On its exit 0, stdout prints `scaffold: created <path>`. Continue.
+- **0** — manifest written. Run `scaffold_new.py`. On its exit 0, stdout prints `scaffold: created <path>`. Continue.
 - **1, 2, 3** — slug not found / premium / network. Pick a different problem from a different gap and retry. Give up after **3 attempts** and surface the latest stderr to the user.
 
 If `scaffold_new.py` exits 1 with "already has content", you accidentally picked a duplicate (`solved_numbers` should have prevented this); pick again.

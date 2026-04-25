@@ -1,14 +1,28 @@
 #!/usr/bin/env python3
 """
-Fetch a LeetCode problem via the public GraphQL endpoint and emit a
-manifest ready to pipe into scaffold_new.py / detect_reiteration.py.
+Fetch a LeetCode problem via the public GraphQL endpoint and write a
+manifest file ready for scaffold_new.py / detect_reiteration.py.
 
-Usage: fetch.py <url-or-slug>
+Usage:
+  fetch.py <url-or-slug> [--out <path>]
 
 Accepts a full LeetCode problem URL (e.g.
 https://leetcode.com/problems/two-sum/description/) or a bare slug
-(e.g. two-sum). Outputs a JSON manifest on stdout with: number, title,
-difficulty, type ("algorithmic"|"SQL"), tags, statement (markdown).
+(e.g. two-sum).
+
+Output:
+  * Writes the manifest JSON to <path> (default
+    /tmp/leetcode-workflow-manifest.json). Manifest fields:
+      number, title, difficulty, type ("algorithmic"|"SQL"), statement.
+  * Prints a one-line summary on stdout for orchestration:
+      fetched: <N>. <Title> (<Difficulty>)
+      manifest: <path>
+
+The manifest is *not* dumped to stdout — that would leak the problem
+statement and any LC topic tags into the conversation, undermining the
+"never hint at the approach" rule. Topic tags are excluded from the
+manifest entirely; the SQL-vs-algorithmic classification is computed
+internally before they're discarded.
 
 Exit codes:
    0 success
@@ -19,19 +33,58 @@ Exit codes:
 """
 from __future__ import annotations
 
+import argparse
 import html
 import json
 import re
 import sys
 import urllib.error
 import urllib.request
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'lib'))
+import db    # noqa: E402
+
+
+DEFAULT_MANIFEST_PATH = '/tmp/leetcode-workflow-manifest.json'
 
 
 QUERY = (
     'query q($s:String!){question(titleSlug:$s){'
     'questionFrontendId title difficulty content topicTags{slug}'
+    ' codeSnippets{langSlug code}'
     '}}'
 )
+
+
+# LC's `langSlug` doesn't always match our `language.name`. Most do (typescript,
+# java, cpp, javascript, rust, kotlin, swift, ruby), but a couple need mapping.
+# Each entry is a fallback list — first match wins.
+LANG_SLUG_ALIASES: dict[str, list[str]] = {
+    'go':     ['golang'],            # LC: 'golang'
+    'python': ['python3', 'python'], # prefer Python 3
+}
+
+
+def lookup_signature(
+    snippets: list[dict],
+    language_name: str,
+    problem_type: str,
+) -> str:
+    """Pick the signature template for the user's language. Returns '' if no
+    snippet matched (rare LC problem with no snippets, unusual language)."""
+    if problem_type == 'SQL':
+        candidates = ['mysql']
+    else:
+        candidates = LANG_SLUG_ALIASES.get(language_name, [language_name])
+    by_slug = {
+        (s.get('langSlug') or '').lower(): s.get('code') or ''
+        for s in (snippets or [])
+    }
+    for slug in candidates:
+        if slug in by_slug:
+            return by_slug[slug]
+    return ''
 
 
 # ── slug / URL handling ────────────────────────────────────────────────────
@@ -110,13 +163,21 @@ def classify_type(tags: list[str]) -> str:
 # ── main ───────────────────────────────────────────────────────────────────
 
 def main() -> int:
-    if len(sys.argv) != 2 or not sys.argv[1].strip():
-        print('Usage: fetch.py <url-or-slug>', file=sys.stderr)
+    ap = argparse.ArgumentParser()
+    ap.add_argument('url', nargs='?', default='',
+                    help='LeetCode problem URL or bare slug')
+    ap.add_argument('--out', default=DEFAULT_MANIFEST_PATH,
+                    help=f'where to write the manifest JSON '
+                         f'(default: {DEFAULT_MANIFEST_PATH})')
+    args = ap.parse_args()
+
+    if not args.url.strip():
+        print('Usage: fetch.py <url-or-slug> [--out <path>]', file=sys.stderr)
         return 64
 
-    slug = extract_slug(sys.argv[1].strip())
+    slug = extract_slug(args.url.strip())
     if slug is None:
-        print(f'ERROR: could not extract slug from {sys.argv[1]!r}', file=sys.stderr)
+        print(f'ERROR: could not extract slug from {args.url!r}', file=sys.stderr)
         return 64
 
     try:
@@ -141,17 +202,29 @@ def main() -> int:
               f'(empty content from public API)', file=sys.stderr)
         return 2
 
-    tags = [t.get('slug', '') for t in (q.get('topicTags') or [])]
+    tags     = [t.get('slug', '') for t in (q.get('topicTags') or [])]
+    snippets = q.get('codeSnippets') or []
+    ptype    = classify_type(tags)
+
+    language_name = db.load_language()['name']
+    signature     = lookup_signature(snippets, language_name, ptype)
+
     manifest = {
         'number':     int(q['questionFrontendId']),
         'title':      q['title'],
         'difficulty': q.get('difficulty', ''),
-        'type':       classify_type(tags),
-        'tags':       tags,
+        'type':       ptype,
         'statement':  html_to_markdown(q['content']),
+        'signature':  signature,
     }
 
-    print(json.dumps(manifest))
+    out_path = Path(args.out)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(manifest))
+
+    print(f'fetched: {manifest["number"]}. {manifest["title"]} '
+          f'({manifest["difficulty"] or "SQL"})')
+    print(f'manifest: {out_path}')
     return 0
 
 

@@ -29,7 +29,7 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / 'lib'))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'lib'))
 import db        # noqa: E402
 import render    # noqa: E402
 
@@ -61,6 +61,7 @@ def main() -> int:
     difficulty = manifest.get('difficulty') or ''
     ptype      = manifest['type']
     statement  = manifest['statement']
+    signature  = manifest.get('signature', '')
 
     if ptype not in ('algorithmic', 'SQL'):
         print(f'ERROR: invalid type {ptype!r}', file=sys.stderr)
@@ -96,7 +97,11 @@ def main() -> int:
             f'# {number}. {title}\n'
             + (statement if statement.endswith('\n') else statement + '\n')
         )
-        sfile.touch()
+        # Seed the solution file with LC's per-language signature template
+        # (function/class declaration with empty body) so the user doesn't
+        # have to copy-paste it from the LC web UI. Empty string when LC
+        # doesn't have a snippet for this language — file stays empty.
+        sfile.write_text(signature)
 
         db.upsert_problem(
             conn, number, title,

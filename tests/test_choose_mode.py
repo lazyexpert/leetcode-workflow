@@ -1,5 +1,5 @@
 """
-Subprocess tests for skills/pick/scripts/choose_mode.py.
+Subprocess tests for scripts/pick/choose_mode.py.
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ import pytest
 from conftest import PLUGIN_ROOT, script_env
 
 
-SCRIPT = PLUGIN_ROOT / 'skills' / 'pick' / 'scripts' / 'choose_mode.py'
+SCRIPT = PLUGIN_ROOT / 'scripts' / 'pick' / 'choose_mode.py'
 
 
 def _run(repo, *, seed=None):

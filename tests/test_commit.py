@@ -1,5 +1,5 @@
 """
-Subprocess tests for skills/done/scripts/commit.py.
+Subprocess tests for scripts/done/commit.py.
 """
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import sys
 from conftest import PLUGIN_ROOT, script_env
 
 
-SCRIPT = PLUGIN_ROOT / 'skills' / 'done' / 'scripts' / 'commit.py'
+SCRIPT = PLUGIN_ROOT / 'scripts' / 'done' / 'commit.py'
 
 
 def _git_log_subjects(repo):

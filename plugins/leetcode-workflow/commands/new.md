@@ -1,13 +1,7 @@
 ---
-name: new
-description: >
-  Scaffold a new LeetCode problem from a LeetCode URL, or (when a non-empty
-  solution already exists at the target path) reset the solution file and
-  start a new attempt for reiteration. Invoked as /leetcode-workflow:new.
+description: Scaffold a new LeetCode problem from a URL, or reset for reiteration if it already exists.
 allowed-tools: Bash, Read
 ---
-
-# new
 
 Pass a LeetCode problem URL. The skill fetches the manifest, decides
 between fresh scaffolding and reiteration, and either creates the folder
@@ -27,23 +21,25 @@ If `$ARGUMENTS` is empty or does not contain `leetcode.com/problems/<slug>`, sto
 ## Step 1 — Fetch the manifest
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/new/scripts/fetch.py "$ARGUMENTS"
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/new/fetch.py "$ARGUMENTS"
 ```
 
-Capture stdout (manifest JSON) on success. Interpret exit codes:
+The script writes the manifest to `/tmp/leetcode-workflow-manifest.json` and prints a one-line summary on stdout. Interpret exit codes:
 
-- **0** — manifest on stdout. Continue.
+- **0** — manifest written. Continue.
 - **1** — slug not found. Tell the user the URL slug wasn't recognised; stop.
 - **2** — premium problem. Tell the user it can't be fetched from the public API; stop.
 - **3** — network failure. Surface stderr; stop.
 - **64** — invalid argument. Re-read Step 0.
+
+**Do not `cat` the manifest file or read the scaffolded `README.md`** — both contain the problem statement, and reading them will tempt you to summarise it, which violates the no-hint rule. The user reads the problem on their own.
 
 ---
 
 ## Step 2 — Decide: new or reiterate
 
 ```bash
-echo '<manifest-json>' | python3 ${CLAUDE_PLUGIN_ROOT}/skills/new/scripts/detect_reiteration.py
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/new/detect_reiteration.py < /tmp/leetcode-workflow-manifest.json
 ```
 
 Stdout is one of:
@@ -56,7 +52,7 @@ Stdout is one of:
 ## Step 3a — Fresh scaffold
 
 ```bash
-echo '<manifest-json>' | python3 ${CLAUDE_PLUGIN_ROOT}/skills/new/scripts/scaffold_new.py
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/new/scaffold_new.py < /tmp/leetcode-workflow-manifest.json
 ```
 
 On exit 0, stdout prints `scaffold: created <path>`. Go to Step 4 (Report).
@@ -67,16 +63,17 @@ On exit 0, stdout prints `scaffold: created <path>`. Go to Step 4 (Report).
 
 Read the existing solution file at `solution_path` (use the Read tool).
 
-Strip its body to a signature-only template. **Output ONLY the stripped code — no markdown fences, no commentary, no explanation:**
+Strip its body to a signature-only template. Use the **Write tool** to save ONLY the stripped code (no fences, no commentary) to `/tmp/leetcode-workflow-body.txt`:
 
-> Strip the implementation from this `<language_name>` LeetCode solution. Keep every function, class, method, and type declaration intact, but replace each body with an empty body. Preserve original indentation. Reply with ONLY the stripped code.
+> Strip the implementation from this `<language_name>` LeetCode solution. Keep every function, class, method, and type declaration intact, but replace each body with an empty body. Preserve original indentation. The file content must be exactly the stripped code — nothing else.
 
-If you cannot meaningfully strip it (e.g. the source is already empty, or the language is unfamiliar), output the empty string `""` — `apply_solution_template.py` will treat that as a full wipe.
+If you cannot meaningfully strip it (e.g. the source is already empty, or the language is unfamiliar), write an empty file instead — `apply_solution_template.py` treats an empty body as a full wipe.
 
-Then pipe `{"number": N, "body_text": "<stripped>"}` into:
+Then run:
 
 ```bash
-echo '<payload-json>' | python3 ${CLAUDE_PLUGIN_ROOT}/lib/apply_solution_template.py
+python3 ${CLAUDE_PLUGIN_ROOT}/lib/apply_solution_template.py \
+    --number <N> --body-file /tmp/leetcode-workflow-body.txt
 ```
 
 On exit 0, stdout prints `retry: cleared <path>`.

@@ -1,5 +1,5 @@
 """
-Subprocess tests for skills/done/scripts/detect_problem.py.
+Subprocess tests for scripts/done/detect_problem.py.
 
 The script needs git visibility into the working tree, so all tests use
 the git_repo fixture (practice_repo + git init).
@@ -13,7 +13,7 @@ import sys
 from conftest import PLUGIN_ROOT, script_env
 
 
-SCRIPT = PLUGIN_ROOT / 'skills' / 'done' / 'scripts' / 'detect_problem.py'
+SCRIPT = PLUGIN_ROOT / 'scripts' / 'done' / 'detect_problem.py'
 
 
 def _run(repo, **kw):

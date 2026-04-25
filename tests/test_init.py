@@ -1,5 +1,5 @@
 """
-Subprocess tests for skills/init/scripts/init.py.
+Subprocess tests for scripts/init/init.py.
 
 The skill's interactive prompts (Steps 1-2 in init/SKILL.md) live in
 prose for the model. Tests here cover the deterministic script side
@@ -17,7 +17,7 @@ import pytest
 from conftest import PLUGIN_ROOT, script_env
 
 
-SCRIPT = PLUGIN_ROOT / 'skills' / 'init' / 'scripts' / 'init.py'
+SCRIPT = PLUGIN_ROOT / 'scripts' / 'init' / 'init.py'
 
 
 def _run(repo, payload):
@@ -51,9 +51,10 @@ def test_init_creates_full_layout(empty_repo):
     # .claude
     assert (empty_repo / '.claude' / 'practice.db').exists()
     assert (empty_repo / '.claude' / 'practice.sql').exists()
-    # config + gitignore
+    # config + gitignore + readme
     assert (empty_repo / 'config.json').exists()
     assert (empty_repo / '.gitignore').exists()
+    assert (empty_repo / 'README.md').exists()
     # src subdirs with .gitkeep
     for section in ('Easy', 'Medium', 'Hard', 'SQL'):
         assert (empty_repo / 'src' / section).is_dir()
@@ -62,6 +63,23 @@ def test_init_creates_full_layout(empty_repo):
     for name in ('progress.md', 'timings.md', 'retry.md',
                  'patterns-coverage.md', 'history.md'):
         assert (empty_repo / name).exists()
+
+
+def test_init_readme_links_to_plugin_repo_and_uses_language_ext(empty_repo):
+    payload = _default_payload(language={'extension': 'py', 'name': 'python'})
+    _run(empty_repo, payload)
+    readme = (empty_repo / 'README.md').read_text()
+    # Workflow refers to the user's chosen extension.
+    assert 'solution.py' in readme
+    assert '__EXT__' not in readme
+    # Orchestration link present.
+    assert 'https://github.com/lazyexpert/leetcode-workflow' in readme
+    # Header is at the top.
+    assert readme.startswith('# LeetCode Practice')
+    # Orchestration section is at the bottom (after the config table).
+    config_idx = readme.index('## Configuration')
+    orch_idx   = readme.index('## Orchestration workflow')
+    assert orch_idx > config_idx
 
 
 def test_init_runs_git_init_when_no_dot_git(empty_repo):
@@ -232,7 +250,7 @@ def test_init_then_scaffold_new_works(empty_repo):
     rc = _run(empty_repo, _default_payload()).returncode
     assert rc == 0
 
-    scaffold = (PLUGIN_ROOT / 'skills' / 'new' / 'scripts' / 'scaffold_new.py')
+    scaffold = (PLUGIN_ROOT / 'scripts' / 'new' / 'scaffold_new.py')
     manifest = {
         'number': 1, 'title': 'Two Sum', 'difficulty': 'Easy',
         'type': 'algorithmic', 'statement': 'Given an array...\n',

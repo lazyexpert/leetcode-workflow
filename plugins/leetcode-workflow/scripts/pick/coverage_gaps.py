@@ -33,7 +33,7 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / 'lib'))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'lib'))
 import db    # noqa: E402
 
 

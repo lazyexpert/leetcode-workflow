@@ -1,13 +1,7 @@
 ---
-name: done
-description: >
-  Complete the in-progress LeetCode problem — finalise its timing, classify
-  its pattern(s), update the retry queue, regenerate views, and commit.
-  Push is left to the user. Invoked as /leetcode-workflow:done.
+description: Complete the in-progress LeetCode problem — record timing, classify patterns, regenerate views, commit.
 allowed-tools: Bash, Read
 ---
-
-# done
 
 Closes the lifecycle for whichever problem currently has a modified or
 untracked non-empty solution file under `src/`.
@@ -21,7 +15,7 @@ the user's already-written code; you do not write or modify it.**
 ## Step 1 — Detect the problem
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/done/scripts/detect_problem.py
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/done/detect_problem.py
 ```
 
 Interpret the exit code:
@@ -62,7 +56,7 @@ Hold this JSON in memory; you'll embed it in Step 3's input.
 Build the input payload by combining the Step-1 JSON with the Step-2 classification (or omit `classification` for SQL problems), then pipe it into:
 
 ```bash
-echo '<payload-json>' | python3 ${CLAUDE_PLUGIN_ROOT}/skills/done/scripts/record_attempt.py
+echo '<payload-json>' | python3 ${CLAUDE_PLUGIN_ROOT}/scripts/done/record_attempt.py
 ```
 
 Payload shape (algorithmic):
@@ -102,7 +96,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/lib/render_and_dump.py
 `tag` is `Easy`, `Medium`, `Hard`, or `SQL` (use `SQL` when `kind == "sql"`).
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/done/scripts/commit.py \
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/done/commit.py \
   --number <N> --tag <Easy|Medium|Hard|SQL> --title "<title>"
 ```
 

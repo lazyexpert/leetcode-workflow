@@ -1,5 +1,5 @@
 """
-Subprocess tests for skills/abort/scripts/abort.py.
+Subprocess tests for scripts/abort/abort.py.
 """
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import time
 from conftest import PLUGIN_ROOT, script_env
 
 
-SCRIPT = PLUGIN_ROOT / 'skills' / 'abort' / 'scripts' / 'abort.py'
+SCRIPT = PLUGIN_ROOT / 'scripts' / 'abort' / 'abort.py'
 
 
 def _run(repo):

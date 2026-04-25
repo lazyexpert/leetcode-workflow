@@ -1,5 +1,22 @@
 # Extraction plan: `~/develop/leetcode` → `~/develop/leetcode-workflow`
 
+> **Status: complete.** All phases landed for v0.1.0.
+>
+> | Phase | Description | Status |
+> |---|---|---|
+> | 0 | Skeleton + manifests | ✓ done |
+> | 1 | Lib core + frozen baseline | ✓ done |
+> | 2 | Decompose `done` and `new` | ✓ done |
+> | 3 | `retry` and `abort` | ✓ done |
+> | 4 | `pick` (new skill) | ✓ done |
+> | 5 | `init` | ✓ done |
+> | 6 | Migrations infra + `update` | ✓ done |
+> | 7 | Update nudge | ✓ done |
+> | 8 | Manifests + README + CLAUDE.md cleanup; `skills/` → `commands/` + `scripts/` rename | ✓ done |
+> | 9 | Dogfood (manual) | partial — `update` not exercised, awaits a real migration |
+>
+> 237 tests passing. Deferred: roadmap items (CI/versioning, LC token, browserless submission) — see `roadmap.md`. The phase-by-phase notes below are kept as a historical record of what each phase shipped.
+
 Living plan for porting the prototype into marketplace shape. Updates as phases land.
 
 ## Goals

@@ -102,7 +102,7 @@ def test_running_update_dismisses_nudge(practice_repo):
     # Pre: nudge fires
     assert _run(practice_repo).stdout != ''
     # Run update
-    update = PLUGIN_ROOT / 'skills' / 'update' / 'scripts' / 'update.py'
+    update = PLUGIN_ROOT / 'scripts' / 'update' / 'update.py'
     subprocess.run(
         [sys.executable, str(update)],
         cwd=practice_repo, env=script_env(practice_repo),

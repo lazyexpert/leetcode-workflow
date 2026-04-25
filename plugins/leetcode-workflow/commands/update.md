@@ -1,14 +1,7 @@
 ---
-name: update
-description: >
-  Apply pending DB migrations after a plugin update, refresh views, and
-  dismiss the update nudge. Run this when other skills print
-  "ⓘ leetcode-workflow updated to vN — run /leetcode-workflow:update".
-  Invoked as /leetcode-workflow:update.
+description: Apply pending DB migrations after a plugin update and dismiss the update nudge.
 allowed-tools: Bash
 ---
-
-# update
 
 After a plugin update, the user's `practice.db` may be on an older
 schema than the plugin code expects. This skill applies any pending
@@ -25,7 +18,7 @@ plugin update is safe and idempotent.
 ## Step 1 — Run the script
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/update/scripts/update.py
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/update/update.py
 ```
 
 Interpret the exit code:

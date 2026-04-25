@@ -1,14 +1,7 @@
 ---
-name: abort
-description: >
-  Abort the latest in-progress LeetCode attempt — drop the attempt row
-  and restore the solution file to HEAD. If the attempt was the only
-  one for the problem (e.g. an aborted /new), drop the problem from
-  the DB and remove its folder. Invoked as /leetcode-workflow:abort.
+description: Abort the latest in-progress LeetCode attempt — restore solution, drop the attempt row.
 allowed-tools: Bash
 ---
-
-# abort
 
 Use when you've started a `/leetcode-workflow:new` or
 `/leetcode-workflow:retry` you no longer want recorded — wrong problem
@@ -27,7 +20,7 @@ worth keeping, `git stash` first.
 ## Step 1 — Run the script
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/abort/scripts/abort.py
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/abort/abort.py
 ```
 
 Interpret the exit code:

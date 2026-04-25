@@ -1,5 +1,5 @@
 """
-Subprocess tests for skills/retry/scripts/pick_problem.py.
+Subprocess tests for scripts/retry/pick_problem.py.
 
 Random-mode determinism: tests seed a single-element pool so the
 random.choice() result is the only valid answer.
@@ -16,7 +16,7 @@ import pytest
 from conftest import PLUGIN_ROOT, script_env
 
 
-SCRIPT = PLUGIN_ROOT / 'skills' / 'retry' / 'scripts' / 'pick_problem.py'
+SCRIPT = PLUGIN_ROOT / 'scripts' / 'retry' / 'pick_problem.py'
 
 
 def _run(repo, *args):

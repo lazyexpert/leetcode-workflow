@@ -1,5 +1,5 @@
 """
-Subprocess tests for skills/new/scripts/scaffold_new.py.
+Subprocess tests for scripts/new/scaffold_new.py.
 """
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import sys
 from conftest import PLUGIN_ROOT, script_env
 
 
-SCRIPT = PLUGIN_ROOT / 'skills' / 'new' / 'scripts' / 'scaffold_new.py'
+SCRIPT = PLUGIN_ROOT / 'scripts' / 'new' / 'scaffold_new.py'
 
 
 def _run(repo, manifest):
@@ -42,7 +42,21 @@ def test_scaffold_new_creates_folder_and_records_problem(practice_repo):
     assert (folder / 'README.md').exists()
     assert (folder / 'README.md').read_text().startswith('# 1. Two Sum')
     assert (folder / 'solution.ts').exists()
+    # Manifest has no signature → solution file is empty.
     assert (folder / 'solution.ts').stat().st_size == 0
+
+
+def test_scaffold_new_writes_signature_when_present(practice_repo):
+    """When the manifest carries a code signature (LC's per-language snippet
+    template), scaffold_new seeds solution.<ext> with it so the user doesn't
+    have to copy-paste it from the LC web UI."""
+    sig = ('function twoSum(nums: number[], target: number): number[] {\n'
+           '    \n'
+           '};')
+    result = _run(practice_repo, _manifest(signature=sig))
+    assert result.returncode == 0, result.stderr
+    sfile = practice_repo / 'src' / 'Easy' / '1.Two_Sum' / 'solution.ts'
+    assert sfile.read_text() == sig
 
     import db
     conn = db.open_db()

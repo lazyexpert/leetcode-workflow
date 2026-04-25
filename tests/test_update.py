@@ -1,5 +1,5 @@
 """
-Subprocess tests for skills/update/scripts/update.py.
+Subprocess tests for scripts/update/update.py.
 
 The update orchestration is tested against the real (empty) migrations
 dir — migration runner edge cases live in test_migrate.py with stubbed
@@ -15,7 +15,7 @@ import sys
 from conftest import PLUGIN_ROOT, script_env
 
 
-SCRIPT = PLUGIN_ROOT / 'skills' / 'update' / 'scripts' / 'update.py'
+SCRIPT = PLUGIN_ROOT / 'scripts' / 'update' / 'update.py'
 
 
 def _run(repo):

@@ -6,11 +6,15 @@ and regenerate views + practice.sql.
 
 Used by both /leetcode-workflow:new (reiteration path) and
 /leetcode-workflow:retry. The caller — SKILL.md — is responsible for
-producing the body text (asks the model to strip the previous solution to
-signature-only, or passes "" for a full wipe / for SQL problems).
+producing the body text (asks the model to strip the previous solution
+to a signature-only template, then writes that text to a file via the
+Write tool).
 
-Reads JSON on stdin:
-  {"number": int, "body_text": str}
+Args:
+  --number N           problem number (algorithmic only)
+  --body-file <path>   file whose contents become the new solution body.
+                       Empty file → full wipe. Bytes are read verbatim
+                       — no JSON encoding, no shell escaping.
 
 Stdout (single line on success):
   retry: cleared <relative-solution-path>
@@ -18,11 +22,11 @@ Stdout (single line on success):
 Exit codes:
   0 success
   1 not a leetcode-workflow repo / problem not in DB / glob collision /
-    malformed input
+    body file missing
 """
 from __future__ import annotations
 
-import json
+import argparse
 import sys
 from pathlib import Path
 
@@ -32,20 +36,19 @@ import render    # noqa: E402
 
 
 def main() -> int:
-    try:
-        payload = json.loads(sys.stdin.read())
-    except json.JSONDecodeError as e:
-        print(f'ERROR: malformed input JSON: {e}', file=sys.stderr)
-        return 1
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--number', type=int, required=True,
+                    help='problem number')
+    ap.add_argument('--body-file', required=True,
+                    help='path to a file containing the new solution body '
+                         '(empty file → full wipe)')
+    args = ap.parse_args()
 
-    number    = payload.get('number')
-    body_text = payload.get('body_text', '')
-    if not isinstance(number, int):
-        print(f'ERROR: "number" must be int, got {number!r}', file=sys.stderr)
+    body_path = Path(args.body_file)
+    if not body_path.exists():
+        print(f'ERROR: body file not found: {body_path}', file=sys.stderr)
         return 1
-    if not isinstance(body_text, str):
-        print(f'ERROR: "body_text" must be str, got {type(body_text).__name__}', file=sys.stderr)
-        return 1
+    body_text = body_path.read_text()
 
     try:
         conn = db.open_db()
@@ -56,7 +59,7 @@ def main() -> int:
     try:
         db.sync_config(conn)
         try:
-            cleared = db.prepare_retry(conn, number, body_text)
+            cleared = db.prepare_retry(conn, args.number, body_text)
         except (ValueError, RuntimeError) as e:
             print(f'ERROR: {e}', file=sys.stderr)
             return 1

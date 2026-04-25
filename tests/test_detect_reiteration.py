@@ -1,5 +1,5 @@
 """
-Subprocess tests for skills/new/scripts/detect_reiteration.py.
+Subprocess tests for scripts/new/detect_reiteration.py.
 """
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import sys
 from conftest import PLUGIN_ROOT, script_env
 
 
-SCRIPT = PLUGIN_ROOT / 'skills' / 'new' / 'scripts' / 'detect_reiteration.py'
+SCRIPT = PLUGIN_ROOT / 'scripts' / 'new' / 'detect_reiteration.py'
 
 
 def _run(repo, manifest):

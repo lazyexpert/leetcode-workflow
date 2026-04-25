@@ -1,5 +1,5 @@
 """
-Subprocess tests for skills/pick/scripts/coverage_gaps.py.
+Subprocess tests for scripts/pick/coverage_gaps.py.
 """
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import sys
 from conftest import PLUGIN_ROOT, script_env
 
 
-SCRIPT = PLUGIN_ROOT / 'skills' / 'pick' / 'scripts' / 'coverage_gaps.py'
+SCRIPT = PLUGIN_ROOT / 'scripts' / 'pick' / 'coverage_gaps.py'
 
 
 def _run(repo):
