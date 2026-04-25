@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "leetcode-workflow",
-  "description": "Track your LeetCode practice in git — scaffold problems, time solves, classify patterns, surface what to retry.",
+  "description": "Claude Code marketplace for the leetcode-workflow plugin — systematic LeetCode practice tracking, all in git.",
   "owner": {
     "name": "lazyexpert",
     "url": "https://github.com/lazyexpert"
@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "leetcode-workflow",
-      "description": "Bundled toolkit of seven skills (init, new, pick, done, retry, abort, update) that turn a git repo into a LeetCode practice journal. SQLite is the source of truth; Markdown views are regenerated on every command.",
+      "description": "Claude Code-native LeetCode practice tracker. Seven slash commands turn an empty git directory into a structured practice journal: scaffold problems from LeetCode URLs, time solves against per-difficulty thresholds, classify each solution against a closed pattern enum, and surface what to revisit (slow timing, brittle complexity, or stale past cooldown). State lives in a SQLite database with five auto-generated Markdown views — progress, timings, retry queue, pattern coverage, history — all git-tracked and local-first. Mostly deterministic Python; Claude is invoked only where reasoning is genuinely needed (problem suggestion, pattern classification, body stripping for retry), keeping token cost low. Pedagogical contract enforced: Claude is a coach, not a solution generator — hints, complexity analysis, pattern names; never the answer.",
       "author": {
         "name": "Khatskalev Oleksandr"
       },
