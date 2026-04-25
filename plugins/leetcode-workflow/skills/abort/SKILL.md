@@ -41,4 +41,6 @@ Interpret the exit code:
 
 One short line — echo the script's output verbatim.
 
+Then run `python3 ${CLAUDE_PLUGIN_ROOT}/lib/nudge.py`. If it printed anything, append the output verbatim on a new line.
+
 Do not summarise, suggest, or comment.

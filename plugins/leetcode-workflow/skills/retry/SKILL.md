@@ -73,4 +73,6 @@ Print one short line — the prepared problem with its reason flags joined by `+
 - `Ready to retry 19. Remove Nth Node From End of List (Medium) — timing+stale.`
 - If `reasons` is empty (explicit pick of a fresh problem), drop the trailing ` — …`.
 
+Then run `python3 ${CLAUDE_PLUGIN_ROOT}/lib/nudge.py`. If it printed anything, append the output verbatim on a new line.
+
 Do not summarise the problem, do not suggest approaches, do not mention complexity.

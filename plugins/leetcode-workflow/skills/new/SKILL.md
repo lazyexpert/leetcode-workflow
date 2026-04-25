@@ -85,9 +85,11 @@ On exit 0, stdout prints `retry: cleared <path>`.
 
 ## Step 4 — Report
 
-Print one short line and nothing else:
+Print one short line:
 
 - `Job's done.` after a fresh scaffold (Step 3a).
 - `Ready to reiterate.` after reiteration (Step 3b).
+
+Then run `python3 ${CLAUDE_PLUGIN_ROOT}/lib/nudge.py`. If it printed anything, append the output verbatim on a new line.
 
 Do not summarise the problem. Do not suggest approaches. Do not mention complexity.

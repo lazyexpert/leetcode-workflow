@@ -114,4 +114,6 @@ Exit code mirrors `git commit`'s. On success the script prints `committed: {N}. 
 
 Print one line — the committed subject (e.g. `Committed 3. Medium. Longest Substring Without Repeating Characters.`).
 
+Then run `python3 ${CLAUDE_PLUGIN_ROOT}/lib/nudge.py`. If it printed anything, append the output verbatim on a new line.
+
 Do not summarise the solution. Do not suggest approaches. Do not mention complexity.

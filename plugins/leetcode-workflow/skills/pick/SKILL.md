@@ -82,9 +82,11 @@ If `scaffold_new.py` exits 1 with "already has content", you accidentally picked
 
 ## Step 3 — Report
 
-Print one short line and nothing else:
+Print one short line:
 
 - After retry path: `Ready to retry {N}. {Title} ({Difficulty}) — {reason+...}.` (drop the trailing ` — …` if reasons are empty).
 - After new path: `Job's done. {N}. {Title} ({Difficulty}) — targets {pattern}.`
+
+Then run `python3 ${CLAUDE_PLUGIN_ROOT}/lib/nudge.py`. If it printed anything, append the output verbatim on a new line.
 
 Do not summarise the problem. Do not suggest approaches. Do not mention complexity.
