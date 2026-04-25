@@ -53,13 +53,27 @@ def apply_pending(
 ) -> list[int]:
     """Apply migrations whose version > current schema_version. Each
     migration is responsible for bumping schema_version as its last
-    statement. Returns the list of versions that were applied."""
+    statement (per convention, wrapped in BEGIN/COMMIT for atomicity).
+    Returns the list of versions that were applied.
+
+    Atomicity: if a migration fails partway through (executescript
+    raises), we explicitly rollback to discard any uncommitted statements
+    from the migration's BEGIN block. The exception propagates to the
+    caller. Migrations applied earlier in this call stay applied.
+    """
     cur     = current_version(conn)
     applied = []
     for version, path in discover_migrations(migrations_dir):
         if version <= cur:
             continue
-        conn.executescript(path.read_text())
+        try:
+            conn.executescript(path.read_text())
+        except sqlite3.Error:
+            try:
+                conn.rollback()
+            except sqlite3.Error:
+                pass
+            raise
         conn.commit()
         applied.append(version)
     return applied

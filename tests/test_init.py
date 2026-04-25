@@ -118,11 +118,13 @@ def test_init_db_has_baseline_schema(empty_repo):
             "SELECT value FROM settings WHERE key = 'schema_version'"
         ).fetchone()
         assert ver == ('0',)
-        # plugin_version_seen seeded (empty string)
+        # plugin_version_seen bumped to current plugin version (so the
+        # update-nudge stays quiet until the next marketplace update).
         seen = conn.execute(
             "SELECT value FROM settings WHERE key = 'plugin_version_seen'"
         ).fetchone()
-        assert seen == ('',)
+        import plugin_meta
+        assert seen == (plugin_meta.plugin_version(),)
     finally:
         conn.close()
 

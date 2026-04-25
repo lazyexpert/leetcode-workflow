@@ -50,9 +50,10 @@ if 'LEETCODE_REPO' not in os.environ:
     os.environ['LEETCODE_REPO'] = str(Path.cwd().resolve())
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / 'lib'))
-import db        # noqa: E402
-import migrate   # noqa: E402
-import render    # noqa: E402
+import db            # noqa: E402
+import migrate       # noqa: E402
+import plugin_meta   # noqa: E402
+import render        # noqa: E402
 
 
 def _validate_input(data: dict) -> tuple[dict, dict] | None:
@@ -158,6 +159,9 @@ def main() -> int:
         db.apply_baseline(conn)
         migrate.apply_pending(conn)
         db.sync_config(conn)
+        # Mark current plugin version as seen so the nudge stays quiet
+        # until the user's marketplace gets a real update.
+        db.upsert_setting(conn, 'plugin_version_seen', plugin_meta.plugin_version())
         render.render_all(conn, repo)
         db.dump_sql(conn)
         final_version = migrate.current_version(conn)
