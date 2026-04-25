@@ -12,12 +12,12 @@ This repository is a **Claude Code plugin marketplace**. Install the plugins her
 
 | Skill | Purpose |
 |---|---|
-| `/leetcode-init` | Bootstrap a fresh practice repo at the current directory: schema, empty views, default config, `.gitignore`, initial commit. |
-| `/leetcode-new <url>` | Scaffold a problem from a LeetCode URL. Creates the folder, writes the README, opens an attempt in the DB. |
-| `/leetcode-done` | Close out the current attempt: timing verdict against your threshold, pattern classification, complexity flag, auto-commit. |
-| `/leetcode-retry [N]` | Pick a problem to revisit — random from the cooldown-elapsed pool, or a specific number you name. Strips the previous body to a signature template. |
-| `/leetcode-abort` | Drop the latest in-progress attempt, restore the solution file from `HEAD`. |
-| `/leetcode-update` | Apply pending DB migrations after a plugin update. |
+| `/leetcode-workflow:init` | Bootstrap a fresh practice repo at the current directory: schema, empty views, default config, `.gitignore`, initial commit. |
+| `/leetcode-workflow:new <url>` | Scaffold a problem from a LeetCode URL. Creates the folder, writes the README, opens an attempt in the DB. |
+| `/leetcode-workflow:done` | Close out the current attempt: timing verdict against your threshold, pattern classification, complexity flag, auto-commit. |
+| `/leetcode-workflow:retry [N]` | Pick a problem to revisit — random from the cooldown-elapsed pool, or a specific number you name. Strips the previous body to a signature template. |
+| `/leetcode-workflow:abort` | Drop the latest in-progress attempt, restore the solution file from `HEAD`. |
+| `/leetcode-workflow:update` | Apply pending DB migrations after a plugin update. |
 
 ---
 
@@ -34,7 +34,7 @@ Then in any directory:
 ```bash
 mkdir my-lc-practice && cd my-lc-practice
 # In Claude Code:
-/leetcode-init
+/leetcode-workflow:init
 ```
 
 You're ready to solve.
