@@ -1,0 +1,11 @@
+{
+  "name": "leetcode-workflow",
+  "description": "Track your LeetCode practice in git — scaffold problems, time solves, classify patterns, surface what to retry. Seven skills (init, new, pick, done, retry, abort, update) over a SQLite-backed practice repo.",
+  "version": "0.0.1",
+  "author": {
+    "name": "Khatskalev Oleksandr"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/lazyexpert/leetcode-workflow",
+  "repository": "https://github.com/lazyexpert/leetcode-workflow"
+}

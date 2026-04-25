@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "leetcode-workflow",
+  "description": "Track your LeetCode practice in git — scaffold problems, time solves, classify patterns, surface what to retry.",
+  "owner": {
+    "name": "lazyexpert",
+    "url": "https://github.com/lazyexpert"
+  },
+  "plugins": [
+    {
+      "name": "leetcode-workflow",
+      "description": "Bundled toolkit of seven skills (init, new, pick, done, retry, abort, update) that turn a git repo into a LeetCode practice journal. SQLite is the source of truth; Markdown views are regenerated on every command.",
+      "author": {
+        "name": "Khatskalev Oleksandr"
+      },
+      "source": "./plugins/leetcode-workflow",
+      "category": "productivity",
+      "homepage": "https://github.com/lazyexpert/leetcode-workflow"
+    }
+  ]
+}
