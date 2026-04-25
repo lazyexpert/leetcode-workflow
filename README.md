@@ -15,10 +15,10 @@ Seven slash commands, each backed by deterministic Python scripts; orchestration
 | Command | Purpose |
 |---|---|
 | `/leetcode-workflow:init` | Bootstrap a fresh practice repo at the current directory: schema, empty views, default config, `.gitignore`, initial commit. Asks two short questions (language, retry thresholds) — `yes` accepts defaults. |
-| `/leetcode-workflow:new <url>` | Scaffold a problem from a LeetCode URL. Creates the folder, writes the README, seeds `solution.<ext>` with LC's per-language signature template, opens an attempt. |
+| `/leetcode-workflow:new <problem-url>` | Scaffold a problem from a LeetCode URL (e.g. `https://leetcode.com/problems/two-sum/`). Creates the folder, writes the README, seeds `solution.<ext>` with LC's per-language signature template, opens an attempt. |
 | `/leetcode-workflow:pick` | "What should I solve next?" — picks a fresh problem targeting an under-covered pattern. With non-zero `pick_retry_ratio`, occasionally routes to a retry pick instead. |
 | `/leetcode-workflow:done` | Close out the current attempt: timing verdict against your threshold, pattern classification, complexity flag, auto-commit. |
-| `/leetcode-workflow:retry [N]` | Pick a problem to revisit — random from the cooldown-elapsed pool, or a specific number you name. Strips the previous body to a signature template. |
+| `/leetcode-workflow:retry [problem-number]` | Pick a problem to revisit. No argument — random from the cooldown-elapsed retry pool. With an argument (e.g. `1`, `42`) — explicit revisit by problem number, cooldown bypassed. Strips the previous body to a signature template. |
 | `/leetcode-workflow:abort` | Drop the latest in-progress attempt, restore the solution file from `HEAD`. |
 | `/leetcode-workflow:update` | Apply pending DB migrations after a plugin update; dismisses the update nudge. |
 
@@ -58,13 +58,15 @@ Three flows you'll spend most of your time in.
 
 ### Daily flow — solving a new problem
 
+`/new` takes a LeetCode problem URL like `https://leetcode.com/problems/two-sum/`.
+
 ```mermaid
 sequenceDiagram
     actor You
     participant Plugin as leetcode-workflow
     participant LC as LeetCode
 
-    You->>Plugin: /leetcode-workflow:new <url>
+    You->>Plugin: /leetcode-workflow:new <problem-url>
     Plugin->>LC: fetch problem
     LC-->>Plugin: title, difficulty, signature
     Plugin-->>You: scaffolded folder + solution.<ext>
@@ -99,7 +101,7 @@ sequenceDiagram
 
 ### Spaced repetition — `/retry`
 
-Past attempts that ran slow, used a brittle approach, or have aged past their cooldown surface in the retry queue. `/retry` reseeds one of them.
+Past attempts that ran slow, used a brittle approach, or have aged past their cooldown surface in the retry queue. `/retry` reseeds one of them. Two forms: bare `/retry` picks at random from the cooldown-elapsed pool; `/retry <problem-number>` (e.g. `/retry 42`) revisits a specific problem and bypasses the cooldown.
 
 ```mermaid
 sequenceDiagram
@@ -107,8 +109,8 @@ sequenceDiagram
     participant Plugin as leetcode-workflow
 
     Note over Plugin: Retry queue tracks problems flagged by:<br/>slow timing, brittle complexity, or stale (cooldown elapsed)
-    You->>Plugin: /leetcode-workflow:retry
-    Plugin->>Plugin: pick from cooldown-elapsed pool
+    You->>Plugin: /leetcode-workflow:retry [problem-number]
+    Plugin->>Plugin: pick problem (random if no arg, explicit if given)
     Plugin->>Plugin: strip body, leave signature template
     Plugin-->>You: problem ready, fresh attempt
     You->>Plugin: /leetcode-workflow:done
