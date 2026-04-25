@@ -83,6 +83,7 @@ If any fail: do not open the PR. Fix them, or stop and ask the human for guidanc
 
 ## Commit and PR shape
 
+- **Fork first if you don't have write access.** External contributors (and most agents acting on their behalf) need to fork `lazyexpert/leetcode-workflow`, push branches to the fork, and open PRs from `<fork>/branch` → `lazyexpert/leetcode-workflow:main`. See [CONTRIBUTING.md "Local setup"](CONTRIBUTING.md#local-setup) and ["Submitting a PR"](CONTRIBUTING.md#submitting-a-pr) for the full sequence — that's the canonical reference; don't reinvent the steps.
 - One logical change per PR. If you find an unrelated bug while working, file an issue — don't bundle it.
 - Imperative-mood commit subjects: `fix: detect_problem misses .sql`, `add: pick rolls against pick_retry_ratio`. Lower-case, terse, no period.
 - PR description should explain *why*. The diff explains *what*. If you're using the PR template (you should), fill in the test plan honestly — "I ran pytest" is fine if you ran pytest; "I exercised /done in a scratch repo" if you did.
