@@ -75,23 +75,26 @@ sequenceDiagram
 
 ### Picking what's next
 
-`/pick` either suggests a fresh problem targeting an under-covered pattern, or — at your configured `pick_retry_ratio` — routes to the retry pool instead.
+`/pick` is one-shot: it chooses a problem and gets you ready to solve. Default routing targets an under-covered pattern (and scaffolds it for you, like `/new` would); at your configured `pick_retry_ratio`, a share of invocations route to the retry pool instead.
 
 ```mermaid
 sequenceDiagram
     actor You
     participant Plugin as leetcode-workflow
+    participant LC as LeetCode
 
     You->>Plugin: /leetcode-workflow:pick
     alt fresh problem (default)
-        Plugin->>Plugin: find an under-covered pattern
-        Plugin-->>You: suggested LeetCode URL
-        Note over You: continue with /leetcode-workflow:new
+        Plugin->>Plugin: choose under-covered pattern + problem
+        Plugin->>LC: fetch problem
+        LC-->>Plugin: title, difficulty, signature
+        Plugin-->>You: scaffolded folder + solution.<ext>
     else retry pool (configurable share)
         Plugin->>Plugin: pick stale problem from retry queue
-        Plugin-->>You: problem ready, signature reset
-        Note over You: solve, then /leetcode-workflow:done
+        Plugin->>Plugin: strip body, leave signature template
+        Plugin-->>You: problem ready, fresh attempt
     end
+    Note over You: solve, then /leetcode-workflow:done
 ```
 
 ### Spaced repetition — `/retry`
