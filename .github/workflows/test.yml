@@ -3,7 +3,11 @@ name: test
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
   pull_request:
+    paths-ignore:
+      - '**.md'
 
 # Cancel an in-progress run on the same branch when a new commit lands.
 # Saves CI minutes and means you always see results for the latest push.
