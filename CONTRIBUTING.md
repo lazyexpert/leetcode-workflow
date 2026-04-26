@@ -25,7 +25,7 @@ What we'll likely **decline**:
 
 ## Local setup
 
-You'll need Python 3.10+ and git. macOS and Linux are tested; Windows likely needs minor path tweaks.
+You'll need Python 3.9+ and git. macOS and Linux are tested; Windows likely needs minor path tweaks.
 
 ### 1. Fork the repo
 

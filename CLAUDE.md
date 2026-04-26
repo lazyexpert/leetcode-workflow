@@ -167,7 +167,7 @@ Reinforced by data-flow constraints: `fetch.py` writes the LC manifest to `/tmp`
 
 ## Conventions
 
-- **Python 3.10+** required for scripts (PEP 604 union syntax). `from __future__ import annotations` defensively in each script for 3.9 tolerance.
+- **Python 3.9+** supported. `from __future__ import annotations` at the top of every script and lib module keeps PEP 604 type unions (`int | str`) parseable as forward references on 3.9. CI matrix exercises 3.9–3.13 on Linux + macOS.
 - **No external Python dependencies.** stdlib + `sqlite3` CLI for `.dump`. Keep it that way — install friction matters.
 - **No external Python dependencies in scripts; pytest is dev-only.**
 - **macOS-tested.** Linux should work; Windows probably needs minor path tweaks.
