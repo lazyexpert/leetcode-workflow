@@ -26,3 +26,6 @@ Thumbs.db
 .coverage.*
 htmlcov/
 coverage.xml
+
+# Local folder for interactions with claude
+temp
