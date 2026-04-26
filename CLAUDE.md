@@ -23,7 +23,7 @@ Claude Code has **no central plugin registry**. Plugins live in marketplaces —
 /plugin install leetcode-workflow@leetcode-workflow
 ```
 
-Once installed, the seven commands become available across all the user's projects. Eventually we may submit to Anthropic's official marketplace (via [claude.ai/settings/plugins/submit](https://claude.ai/settings/plugins/submit)), but that's a v1+ concern.
+Once installed, the seven commands become available across all the user's projects. The plugin is self-publishable: any user running `/plugin marketplace add lazyexpert/leetcode-workflow` installs it directly from this repo's public `marketplace.json` — no Anthropic-side submission required. Curated discovery via Anthropic's web UI may come later; that's a v1+ concern.
 
 ### Repo layout
 
@@ -218,6 +218,8 @@ CI invocation: `ruff check --output-format=github .` — emits inline annotation
 
 We do **not** enforce `ruff format` in CI. The codebase uses intentional alignment (`=` columns, `if x: foo()` one-liners with aligned colons) that the formatter would strip. Formatter adoption is a separate style decision.
 
+We also deliberately skip a few security-tooling layers: dep-vuln scanners like Snyk have nothing to scan (zero runtime Python deps — see Conventions), standalone bandit is redundant once ruff `S` rules are enabled, and SLSA/release signing is overkill for a v0.1.0 plugin marketplace.
+
 ### Coverage
 
 Most tests run scripts as subprocesses, so default in-process coverage misses them. The setup measures both the parent pytest process and every subprocess it spawns, then combines.
@@ -242,7 +244,7 @@ coverage html --rcfile=.coveragerc          # optional: htmlcov/index.html
 
 Baseline as of this writing: **95% line coverage, 19 modules, 957 statements, 202 branches.** Lowest is `scripts/update/update.py` at 84% (only exercised when a real migration ships). Plain `pytest` (without `coverage run`) is unaffected — the scaffolding is fully gated on `COVERAGE_PROCESS_START`.
 
-CI integration is straightforward: `pip install -r requirements-dev.txt` then the four commands above, ending with `coverage report --fail-under=<N>` when we set a gate. `coverage xml` produces a Codecov-compatible report.
+CI runs the four commands above; `.coveragerc` sets `fail_under = 95`, so `coverage report` exits non-zero if total line coverage drops below the baseline. `coverage xml` produces a Codecov-compatible report.
 
 ### Local install for dogfooding
 
