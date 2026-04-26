@@ -54,7 +54,11 @@ def reasons_for(conn, number: int) -> list[str]:
         'FROM retry_flags WHERE number = ?',
         (number,),
     ).fetchone() or (0, 0, 0)
-    return [name for flag, name in zip(row, ('timing', 'complexity', 'stale'), strict=True) if flag]
+    return [name for name, flag in (
+        ('timing',     row[0]),
+        ('complexity', row[1]),
+        ('stale',      row[2]),
+    ) if flag]
 
 
 def main() -> int:
