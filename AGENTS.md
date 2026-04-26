@@ -75,7 +75,7 @@ If any fail: do not open the PR. Fix them, or stop and ask the human for guidanc
 - **Folder naming** in user repos: `src/<Easy|Medium|Hard|SQL>/<number>.<Title_With_Underscores>/`. Underscores, not spaces. Don't change this.
 - **Cross-script imports**: `scripts/<name>/*.py` import from `lib/` via `sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'lib'))`. Don't refactor this into a package — it works, and packaging adds install friction.
 - **JSON over the wire**: scripts that take structured input read JSON from stdin or `--input <path>`. Multi-line / arbitrary-byte payloads (stripped solution bodies) use `--body-file <path>` to dodge shell-escaping fragility.
-- **`from __future__ import annotations`** is at the top of every script and lib module. Keep it there even if the file targets 3.10+ — it's a defensive default.
+- **`from __future__ import annotations`** is at the top of every script and lib module. Keep it there — it's what lets PEP 604 type unions (`int | str`) work on the 3.9 baseline (CI exercises 3.9–3.13).
 - **`${CLAUDE_PLUGIN_ROOT}`** in `commands/*.md` — never hard-code paths there. The marketplace expands this at runtime.
 - **`lib/nudge.py`** runs as the last step of every command body. If you add a command, add the nudge invocation. If you modify a command, don't delete the nudge.
 

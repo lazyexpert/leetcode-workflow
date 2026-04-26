@@ -1,7 +1,7 @@
 # Ruff config — single-tool linter + formatter for Python.
 # Run: `ruff check .` (lint) and `ruff format --check .` (formatter dry-run).
 
-target-version = "py310"
+target-version = "py39"
 line-length = 100
 
 extend-exclude = [

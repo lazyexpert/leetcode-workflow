@@ -39,6 +39,12 @@ Capture stdout (one-line JSON) on success. Interpret exit codes:
 
 Read the file at `solution_path` (use the Read tool).
 
+Remove any stale body file from a prior `/retry` session before writing — the Write tool refuses to silently overwrite, and a stale file would otherwise be reused with the wrong content:
+
+```bash
+rm -f /tmp/leetcode-workflow-body.txt
+```
+
 Strip its body to a signature-only template. Use the **Write tool** to save ONLY the stripped code (no fences, no commentary) to `/tmp/leetcode-workflow-body.txt`:
 
 > Strip the implementation from this `<language_name>` LeetCode solution. Keep every function, class, method, and type declaration intact, but replace each body with an empty body. Preserve original indentation. The file content must be exactly the stripped code — nothing else.
