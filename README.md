@@ -10,7 +10,7 @@ This repository is a **Claude Code plugin marketplace**. Install the plugins her
 
 ## What's in the box
 
-Seven slash commands, each backed by deterministic Python scripts; orchestration prose lives in `commands/<name>.md`.
+Eight slash commands, each backed by deterministic Python scripts; orchestration prose lives in `commands/<name>.md`.
 
 | Command | Purpose |
 |---|---|
@@ -19,6 +19,7 @@ Seven slash commands, each backed by deterministic Python scripts; orchestration
 | `/leetcode-workflow:pick` | "What should I solve next?" — picks a fresh problem targeting an under-covered pattern. With non-zero `pick_retry_ratio`, occasionally routes to a retry pick instead. |
 | `/leetcode-workflow:done` | Close out the current attempt: timing verdict against your threshold, pattern classification, complexity flag, auto-commit. |
 | `/leetcode-workflow:retry [problem-number]` | Pick a problem to revisit. No argument — random from the cooldown-elapsed retry pool. With an argument (e.g. `1`, `42`) — explicit revisit by problem number, cooldown bypassed. Strips the previous body to a signature template. |
+| `/leetcode-workflow:import <source-path>` | One-shot: pull problems from a pre-existing LeetCode practice repo into the current (fresh init'd) practice repo. Source is read-only — files copy, never modify. Walks layout, fetches LC metadata (with web fallback for premium problems), recovers `started_at` from the source's git history. Refuses if the practice DB already has problems. Doesn't auto-commit — you review `git diff` first. |
 | `/leetcode-workflow:abort` | Drop the latest in-progress attempt, restore the solution file from `HEAD`. |
 | `/leetcode-workflow:update` | Apply pending DB migrations after a plugin update; dismisses the update nudge. |
 

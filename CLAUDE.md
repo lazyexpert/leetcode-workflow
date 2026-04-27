@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A **Claude Code plugin marketplace** that ships a single bundled plugin (`leetcode-workflow`) containing seven slash commands: `init`, `new`, `pick`, `done`, `retry`, `abort`, `update`. End users install the marketplace, run `/leetcode-workflow:init` in an empty directory to scaffold a personal practice repo, then use the rest of the commands inside that repo.
+A **Claude Code plugin marketplace** that ships a single bundled plugin (`leetcode-workflow`) containing eight slash commands: `init`, `new`, `pick`, `done`, `retry`, `import`, `abort`, `update`. End users install the marketplace, run `/leetcode-workflow:init` in an empty directory to scaffold a personal practice repo, then use the rest of the commands inside that repo.
 
 The commands are tightly coupled — shared DB, shared views, shared lifecycle. They ship as one plugin so the user installs once and gets the full toolkit. The `/leetcode-workflow:<command>` invocation form is the only supported one.
 
@@ -23,7 +23,7 @@ Claude Code has **no central plugin registry**. Plugins live in marketplaces —
 /plugin install leetcode-workflow@leetcode-workflow
 ```
 
-Once installed, the seven commands become available across all the user's projects. The plugin is self-publishable: any user running `/plugin marketplace add lazyexpert/leetcode-workflow` installs it directly from this repo's public `marketplace.json` — no Anthropic-side submission required. Curated discovery via Anthropic's web UI may come later; that's a v1+ concern.
+Once installed, the eight commands become available across all the user's projects. The plugin is self-publishable: any user running `/plugin marketplace add lazyexpert/leetcode-workflow` installs it directly from this repo's public `marketplace.json` — no Anthropic-side submission required. Curated discovery via Anthropic's web UI may come later; that's a v1+ concern.
 
 ### Repo layout
 
@@ -35,13 +35,15 @@ plugins/
     .claude-plugin/plugin.json     # plugin manifest (name + version)
     commands/                      # one file per slash command — orchestration prose
       init.md      new.md      pick.md
-      done.md      retry.md    abort.md      update.md
+      done.md      retry.md    import.md
+      abort.md     update.md
     scripts/                       # deterministic Python scripts called by commands
       init/init.py
       new/{fetch.py, detect_reiteration.py, scaffold_new.py}
       pick/{choose_mode.py, coverage_gaps.py}
       done/{detect_problem.py, record_attempt.py, commit.py}
       retry/pick_problem.py
+      import_repo/{preflight.py, bulk_seed.py, git_first_commit.py}
       abort/abort.py
       update/update.py
     lib/                           # shared modules + shared CLI scripts
@@ -98,7 +100,7 @@ User practice repos store all structured state in `.claude/practice.db` (SQLite,
 | Table | Holds |
 |---|---|
 | `problems`   | stable metadata: `number PK, title, difficulty, kind, folder, created_at` |
-| `attempts`   | one row per solve session: `id PK, problem_number FK, started_at, duration_minutes, revisit`. `duration_minutes IS NULL` while in progress. |
+| `attempts`   | one row per solve session: `id PK, problem_number FK, started_at, duration_minutes, revisit, imported`. `duration_minutes IS NULL` while in progress (imported = 0) or for completed-but-untimed imports (imported = 1). |
 | `patterns`   | `problem_number FK, pattern, created_at` — replaced wholesale per `/leetcode-workflow:done` |
 | `thresholds` | `difficulty PK, minutes` — mirrors `config.json: retry_thresholds_minutes` |
 | `settings`   | singleton key/value bag: `review_cooldown_days`, `schema_version`, `plugin_version_seen` |
@@ -118,6 +120,7 @@ All invoked as `/leetcode-workflow:<name>`.
 | `/leetcode-workflow:pick` | "What should I solve next?". Rolls against `pick_retry_ratio`; on `retry` runs the retry flow, on `new` reads coverage gaps and asks the model to suggest a fresh problem URL targeting under-covered patterns, then runs the new flow. |
 | `/leetcode-workflow:done` | Close out the current attempt. Detects the modified non-empty `solution.<ext\|sql>` under `src/`. Model classifies the solution against the closed pattern enum (prompt inline in `commands/done.md`). Reports timing verdict, patterns, complexity verdict. Auto-commits with `{N}. {Easy\|Medium\|Hard\|SQL}. {Title}`. |
 | `/leetcode-workflow:retry [N]` | Pick a problem to revisit. No arg → random from `retry_flags WHERE stale = 1` (cooldown elapsed). With arg → explicit pick (cooldown bypassed). Model strips the previous solution to a signature-only template; `apply_solution_template.py` writes it. Does **not** commit. |
+| `/leetcode-workflow:import <source-path>` | One-shot: pull problems from a pre-existing LeetCode practice repo into the current (fresh init'd) practice repo. Source is read-only — files copy, never modify. Walks layout, fetches LC metadata (with web fallback for premium), recovers `started_at` from the source's git history, optionally classifies patterns. Inserts as `imported = 1` attempts (NULL duration — no historical timing). Refuses if the practice DB already has problems. Does **not** commit — user reviews `git diff` first. |
 | `/leetcode-workflow:abort` | Drop the latest in-progress attempt. Sole-attempt for the problem (typical aborted `/new`) → full rollback: removes the folder, deletes problem + attempts (CASCADE wipes patterns). Otherwise → restore the solution file from `HEAD` via `git checkout`. Does **not** commit. Destructive on uncommitted edits in the affected file. |
 | `/leetcode-workflow:update` | Apply pending DB migrations after a plugin update. Reads `settings.schema_version`, runs each `migrations/000N_*.sql` with N greater. Atomic: a failed migration rolls back via `conn.rollback()`. Bumps `plugin_version_seen` to the manifest's current version, dismissing the nudge. |
 
@@ -200,7 +203,7 @@ pytest tests/test_db.py -v         # one file
 pytest -k "atomicity"              # filter by name
 ```
 
-`pytest.ini` sets `pythonpath = plugins/leetcode-workflow/lib` and `testpaths = tests`. `conftest.py` provides `practice_repo` (tmp dir + baseline applied + `db` reloaded), `empty_repo` (no init — for error-path tests), and `git_repo` (practice + git init + initial commit, for `commit.py` and `abort.py` git-restore tests).
+`pytest.ini` sets `pythonpath = plugins/leetcode-workflow/lib` and `testpaths = tests`. `conftest.py` provides `practice_repo` (tmp dir + baseline + all shipped migrations applied + `db` reloaded — the real schema state of an init'd repo), `baseline_repo` (baseline only, for migration-runner tests that need to start at version 0 and apply fixture migrations), `empty_repo` (no init — for error-path tests), and `git_repo` (practice + git init + initial commit, for `commit.py` and `abort.py` git-restore tests).
 
 ### Linting
 

@@ -53,7 +53,7 @@ If any fail: do not open the PR. Fix them, or stop and ask the human for guidanc
 ### What requires a human decision first
 
 - Adding a new command. Surface area is intentionally narrow. File an issue.
-- Changing the seven-command list, command names, or the `/leetcode-workflow:<name>` invocation form.
+- Changing the eight-command list, command names, or the `/leetcode-workflow:<name>` invocation form.
 - Anything in `.claude-plugin/marketplace.json` or `plugins/leetcode-workflow/.claude-plugin/plugin.json` beyond a version bump.
 - `schema-baseline.sql` — frozen post-v0 release.
 - Adding a CI workflow under `.github/workflows/` — the human is still designing the CI shape (see [roadmap.md](roadmap.md)).

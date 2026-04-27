@@ -47,7 +47,7 @@ def test_update_no_pending_says_up_to_date(practice_repo):
     result = _run(practice_repo)
     assert result.returncode == 0, result.stderr
     assert 'schema is up-to-date' in result.stdout
-    assert 'schema_version = 0' in result.stdout
+    assert 'schema_version = 1' in result.stdout
 
 
 def test_update_bumps_plugin_version_seen(practice_repo):

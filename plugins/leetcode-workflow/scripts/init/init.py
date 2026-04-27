@@ -158,6 +158,7 @@ Other commands:
 
 - `/leetcode-workflow:pick` — "what should I solve next?". Picks an under-covered pattern; with a non-zero `pick_retry_ratio`, sometimes routes to a retry instead.
 - `/leetcode-workflow:retry [N]` — revisit a problem (random from the retry queue, or explicit by number).
+- `/leetcode-workflow:import <path>` — import problems from a pre-existing practice repo into this one (run once, in a fresh init'd repo).
 - `/leetcode-workflow:abort` — drop the latest in-progress attempt.
 - `/leetcode-workflow:update` — apply pending DB migrations after a plugin update.
 

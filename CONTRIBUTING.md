@@ -11,7 +11,7 @@ If you're a coding agent (Claude Code, Cursor, etc.), also read [AGENTS.md](AGEN
 - **Bug fixes.** Always welcome. File an issue first if the bug is non-obvious so we can confirm it's a bug before you sink time into a fix.
 - **Documentation improvements.** README, CLAUDE.md, command help text, error messages. Low-friction PRs.
 - **Test coverage.** The baseline is ~95%. PRs that lift uncovered branches without adding scope are great.
-- **New features.** Open an issue first. The plugin's surface is intentionally small (seven commands); we add carefully. Look at [roadmap.md](roadmap.md) for things already on the radar.
+- **New features.** Open an issue first. The plugin's surface is intentionally small (eight commands); we add carefully. Look at [roadmap.md](roadmap.md) for things already on the radar.
 - **New patterns in the default classifier list.** Small PR, just edit `lib/db.py: DEFAULT_PATTERNS` and add a regression test.
 
 What we'll likely **decline**:
@@ -188,7 +188,7 @@ The `{N}. {Easy|Medium|Hard|SQL}. {Title}` format you see in user practice repos
 
 ## Adding a command (advanced)
 
-This is rare — we have seven and don't expect to grow much. If you've thought it through and want to propose one:
+This is rare — we have eight and don't expect to grow much. If you've thought it through and want to propose one:
 
 1. Open an issue first. Describe the workflow gap and what command shape you have in mind.
 2. If we agree on the shape, follow CLAUDE.md "Adding a command":

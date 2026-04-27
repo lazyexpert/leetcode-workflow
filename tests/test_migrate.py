@@ -50,7 +50,8 @@ def test_discover_orders_by_version(tmp_path):
 
 # ── current_version ─────────────────────────────────────────────────────────
 
-def test_current_version_reads_baseline(practice_repo):
+def test_current_version_reads_baseline(baseline_repo):
+    """Right after baseline (no migrations applied yet), schema_version is 0."""
     import db
     import migrate
     conn = db.open_db()
@@ -87,20 +88,23 @@ def _write_migration(d, version, body):
     )
 
 
-def test_apply_pending_no_migrations_noop(practice_repo):
-    """Phase 5/6: real migrations/ dir is empty — no-op."""
+def test_apply_pending_default_dir_advances_to_latest(baseline_repo):
+    """Calling apply_pending with no migrations_dir uses the real plugin
+    migrations/ folder and advances schema_version to the latest version
+    shipped. This test stays robust as new migrations land — it asserts
+    on the *shape* of the result, not on specific version numbers."""
     import db
     import migrate
     conn = db.open_db()
     try:
         applied = migrate.apply_pending(conn)
-        assert applied == []
-        assert migrate.current_version(conn) == 0
+        assert applied  # at least one migration shipped beyond baseline
+        assert migrate.current_version(conn) == applied[-1]
     finally:
         conn.close()
 
 
-def test_apply_pending_runs_migration_and_bumps_version(practice_repo, tmp_path):
+def test_apply_pending_runs_migration_and_bumps_version(baseline_repo, tmp_path):
     import db
     import migrate
     d = tmp_path / 'migrations'
@@ -119,7 +123,7 @@ def test_apply_pending_runs_migration_and_bumps_version(practice_repo, tmp_path)
         conn.close()
 
 
-def test_apply_pending_runs_in_numerical_order(practice_repo, tmp_path):
+def test_apply_pending_runs_in_numerical_order(baseline_repo, tmp_path):
     import db
     import migrate
     d = tmp_path / 'migrations'
@@ -137,7 +141,7 @@ def test_apply_pending_runs_in_numerical_order(practice_repo, tmp_path):
         conn.close()
 
 
-def test_apply_pending_skips_already_applied(practice_repo, tmp_path):
+def test_apply_pending_skips_already_applied(baseline_repo, tmp_path):
     """If schema_version is already 5, only migrations >5 are applied."""
     import db
     import migrate
@@ -159,7 +163,7 @@ def test_apply_pending_skips_already_applied(practice_repo, tmp_path):
         conn.close()
 
 
-def test_apply_pending_idempotent(practice_repo, tmp_path):
+def test_apply_pending_idempotent(baseline_repo, tmp_path):
     """Running apply_pending twice produces the same result the second time."""
     import db
     import migrate
@@ -178,7 +182,7 @@ def test_apply_pending_idempotent(practice_repo, tmp_path):
         conn.close()
 
 
-def test_apply_pending_atomicity_on_failure(practice_repo, tmp_path):
+def test_apply_pending_atomicity_on_failure(baseline_repo, tmp_path):
     """A migration that fails partway through must leave the DB unchanged.
     Schema_version should remain at its pre-call value, and any DDL the
     failed migration ran before crashing must be rolled back."""
@@ -209,7 +213,7 @@ def test_apply_pending_atomicity_on_failure(practice_repo, tmp_path):
         conn.close()
 
 
-def test_apply_pending_stops_at_first_failure(practice_repo, tmp_path):
+def test_apply_pending_stops_at_first_failure(baseline_repo, tmp_path):
     """If 0001 succeeds and 0002 fails, 0001 stays applied; 0003 is not
     reached. apply_pending raises and current_version reflects the
     successful migration only."""

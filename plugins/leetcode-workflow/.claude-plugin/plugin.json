@@ -1,7 +1,7 @@
 {
   "name": "leetcode-workflow",
-  "description": "Claude Code-native LeetCode practice tracker. Seven slash commands scaffold problems, time solves, classify patterns, and surface what to retry — backed by a SQLite practice repo with five generated Markdown views (progress, timings, retry, patterns coverage, history). Mostly deterministic Python; Claude is invoked only where reasoning is needed (problem suggestion, pattern classification, body stripping), keeping token cost low. Pedagogical contract enforced: hints, never solutions.",
-  "version": "0.1.1",
+  "description": "Claude Code-native LeetCode practice tracker. Eight slash commands scaffold problems, time solves, classify patterns, surface what to retry, and import existing practice repos — backed by a SQLite practice repo with five generated Markdown views (progress, timings, retry, patterns coverage, history). Mostly deterministic Python; Claude is invoked only where reasoning is needed (problem suggestion, pattern classification, body stripping), keeping token cost low. Pedagogical contract enforced: hints, never solutions.",
+  "version": "0.1.3",
   "author": {
     "name": "Khatskalev Oleksandr"
   },
