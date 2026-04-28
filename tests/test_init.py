@@ -41,7 +41,7 @@ def test_init_succeeds_in_empty_dir(empty_repo):
     result = _run(empty_repo, _default_payload())
     assert result.returncode == 0, result.stderr
     assert 'init: created leetcode-workflow practice repo' in result.stdout
-    assert 'schema_version = 1' in result.stdout
+    assert 'schema_version = 2' in result.stdout
 
 
 def test_init_creates_full_layout(empty_repo):
@@ -169,7 +169,7 @@ def test_init_db_has_baseline_schema(empty_repo):
         ver = conn.execute(
             "SELECT value FROM settings WHERE key = 'schema_version'"
         ).fetchone()
-        assert ver == ('1',)
+        assert ver == ('2',)
         # plugin_version_seen bumped to current plugin version (so the
         # update-nudge stays quiet until the next marketplace update).
         seen = conn.execute(
@@ -216,7 +216,7 @@ def test_init_dumps_sql(empty_repo):
     sql = (empty_repo / '.claude' / 'practice.sql').read_text()
     assert 'CREATE TABLE' in sql
     assert "INSERT INTO settings" in sql
-    assert "'schema_version','1'" in sql or "'schema_version', '1'" in sql
+    assert "'schema_version','2'" in sql or "'schema_version', '2'" in sql
 
 
 # ── refusal: non-empty cwd ─────────────────────────────────────────────────

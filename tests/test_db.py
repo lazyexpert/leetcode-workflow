@@ -116,8 +116,8 @@ def test_open_db_returns_working_connection(practice_repo):
     conn = db.open_db()
     try:
         # practice_repo applies baseline + all shipped migrations; the
-        # current latest is 1.
-        assert conn.execute('SELECT value FROM settings WHERE key = ?', ('schema_version',)).fetchone() == ('1',)
+        # current latest is 2.
+        assert conn.execute('SELECT value FROM settings WHERE key = ?', ('schema_version',)).fetchone() == ('2',)
     finally:
         conn.close()
 
