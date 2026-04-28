@@ -230,3 +230,68 @@ def test_bulk_seed_exits_one_when_not_initialised(empty_repo, tmp_path):
     result = _run(empty_repo, manifest)
     assert result.returncode == 1
     assert 'Not a leetcode-workflow repo' in result.stderr
+
+
+# ── manifest validation: each error path on _validate_problem ─────────────
+
+def test_bulk_seed_rejects_missing_required_key(practice_repo, tmp_path):
+    _apply_migration(practice_repo)
+    src = _make_source_solution(tmp_path, 'two_sum.ts', 'x\n')
+    p = _problem(solution_source=str(src))
+    del p['number']
+    result = _run(practice_repo, {'problems': [p]})
+    assert result.returncode == 1
+    assert "missing key 'number'" in result.stderr
+
+
+def test_bulk_seed_rejects_non_positive_number(practice_repo, tmp_path):
+    _apply_migration(practice_repo)
+    src = _make_source_solution(tmp_path, 'two_sum.ts', 'x\n')
+    result = _run(practice_repo, {'problems': [_problem(
+        number=0, solution_source=str(src),
+    )]})
+    assert result.returncode == 1
+    assert 'number must be a positive int' in result.stderr
+
+
+def test_bulk_seed_rejects_unknown_type(practice_repo, tmp_path):
+    _apply_migration(practice_repo)
+    src = _make_source_solution(tmp_path, 'two_sum.ts', 'x\n')
+    result = _run(practice_repo, {'problems': [_problem(
+        type='unknown', solution_source=str(src),
+    )]})
+    assert result.returncode == 1
+    assert 'invalid type' in result.stderr
+
+
+def test_bulk_seed_rejects_non_positive_started_at(practice_repo, tmp_path):
+    _apply_migration(practice_repo)
+    src = _make_source_solution(tmp_path, 'two_sum.ts', 'x\n')
+    result = _run(practice_repo, {'problems': [_problem(
+        started_at=0, solution_source=str(src),
+    )]})
+    assert result.returncode == 1
+    assert 'started_at must be a positive int' in result.stderr
+
+
+def test_bulk_seed_rejects_non_list_patterns(practice_repo, tmp_path):
+    _apply_migration(practice_repo)
+    src = _make_source_solution(tmp_path, 'two_sum.ts', 'x\n')
+    result = _run(practice_repo, {'problems': [_problem(
+        patterns='Two Pointers', solution_source=str(src),
+    )]})
+    assert result.returncode == 1
+    assert 'patterns must be a list of strings' in result.stderr
+
+
+def test_bulk_seed_rejects_malformed_manifest_json(practice_repo):
+    """Bare invalid JSON on stdin → exit 1 with a clear message."""
+    _apply_migration(practice_repo)
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT)],
+        cwd=practice_repo, env=script_env(practice_repo),
+        input='not valid json',
+        capture_output=True, text=True,
+    )
+    assert result.returncode == 1
+    assert 'malformed manifest JSON' in result.stderr
