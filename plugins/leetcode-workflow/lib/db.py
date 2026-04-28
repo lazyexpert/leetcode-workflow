@@ -221,13 +221,38 @@ def start_attempt(conn: sqlite3.Connection, number: int) -> int:
 
 
 def latest_open_attempt(conn: sqlite3.Connection, number: int) -> tuple[int, int] | None:
-    """Return (attempt_id, started_at) of the latest in-progress attempt, or None."""
+    """Return (attempt_id, started_at) of the latest in-progress attempt, or None.
+    Imported attempts (imported = 1) are excluded — they're completed despite
+    NULL duration_minutes."""
     return conn.execute(
         'SELECT id, started_at FROM attempts '
-        'WHERE problem_number = ? AND duration_minutes IS NULL '
+        'WHERE problem_number = ? AND duration_minutes IS NULL AND imported = 0 '
         'ORDER BY started_at DESC LIMIT 1',
         (number,),
     ).fetchone()
+
+
+def import_attempt(conn: sqlite3.Connection, number: int, started_at: int) -> int:
+    """Insert a completed-but-timing-unknown attempt for an imported problem.
+    duration_minutes stays NULL (no measurement); imported = 1 distinguishes
+    this row from an in-progress attempt so /done won't close it. revisit is 0;
+    callers can update later via classification.
+
+    Same UNIQUE-collision retry as start_attempt — bumps started_at by a second
+    on conflict so the (problem_number, started_at) constraint stays meaningful
+    without being flaky for imports that happen to share a timestamp.
+    """
+    while True:
+        try:
+            cur = conn.execute(
+                'INSERT INTO attempts '
+                '  (problem_number, started_at, duration_minutes, revisit, imported) '
+                'VALUES (?, ?, NULL, 0, 1)',
+                (number, started_at),
+            )
+            return cur.lastrowid
+        except sqlite3.IntegrityError:
+            started_at += 1
 
 
 def complete_attempt(conn: sqlite3.Connection, attempt_id: int, revisit: bool) -> int:
